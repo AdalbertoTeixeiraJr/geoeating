@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- DAOS 
+		Exs.:
+		
+	<bean id="irregularDAO" class="smartgathering.formulario.irregular.hibernate.IrregularDAO" scope="singleton">
+		
+	</bean>
+	
+	-->
+	
+	<!-- CONFIGURACAO HIBERNATE 
+	Exs.:
+	
+	<bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSourceGeoGas"/>
+        <property name="persistenceProvider">
+            <bean class="org.hibernate.ejb.HibernatePersistence"/>
+        </property>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="dataSourceSG"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	   <property name="driverClassName" value="org.postgresql.Driver" />
+	   <property name="url" value="jdbc:postgresql://localhost:5432/geogas" />
+	   <property name="username" value="postgres" />
+	   <property name="password" value="admin" />
+    </bean>
+	
+	-->
+	
+	<bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSourceGeoGas"/>
+        <property name="persistenceProvider">
+            <bean class="org.hibernate.ejb.HibernatePersistence"/>
+        </property>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="dataSourceGeoGas"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	   <property name="driverClassName" value="org.postgresql.Driver" />
+	   <property name="url" value="jdbc:postgresql://localhost:5432/geoeating" />
+	   <property name="username" value="geoeating" />
+	   <property name="password" value="geoeatingpasswd" />
+    </bean>
+	
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+    <bean id="transactionManager"
+        class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory"
+            ref="entityManagerFactory" />
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    
+    <!-- ACTIONS
+    Exs.:
+    
+    <bean id="formularioAction" class="smartgathering.formulario.action.FormularioAction">
+    	<property name="formularioDAO" ref="formularioDAO" />
+	</bean>
+     -->
+</beans>

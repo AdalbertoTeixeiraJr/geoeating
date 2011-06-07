@@ -8,36 +8,10 @@
 		<constant name="struts.devMode" value="false" />
     	<package name="smartgathering" extends="struts-default">
     	
-    	<!-- http://<endereço servidor>/getGasStation?id=<numId> -->
-    	<action name="getGasStation" class="gasStationAction" method="getGasStationById" >
+    	<!--  -->
+    	<action name="test" class="restaurantAction" method="test" >
+    		<result name="success">/mapa.html</result>
 	    </action>
-	    
-	    <!-- http://<endereço servidor>/getAllPlaces -->
-	    <action name="getAllPlaces" class="gasStationAction" method="getAllGasStations" >
-	    </action>
-	    
-	    <!-- http://<endereço servidor>/geocodingState -->
-    	<action name="geocodingState" class="gasStationAction" method="geocodingState" >
-	    </action>
-	    
-	    <action name="kml" class="gasStationAction" method="giveGasStationsKML" >
-	    </action>
-	    
-	    <action name="kml2" class="gasStationAction" method="redirectGeoServer" >
-	    </action>
-	    
-	    <action name="getStates" class="gasStationAction" method="getStates" >
-	    </action>
-	    
-	    <action name="getCities" class="gasStationAction" method="getCities" >
-	    </action>
-	    
-	    <action name="getStatesXML" class="gasStationAction" method="getStatesXML" >
-	    </action>
-	    
-	    <action name="getCitiesXML" class="gasStationAction" method="getCitiesXML" >
-	    </action>
-	    
 	    
 	        <!-- Add actions here
 	        	Exs.:

@@ -1,12 +1,12 @@
-DROP VIEW MostMovimented;
+DROP VIEW Top20Area;
+
+DROP VIEW MovimentedRestaurant;
 
 DROP VIEW FoodKindGeom;
 
 DROP VIEW RestaurantNoWait;
 
-DROP VIEW RestaurantsFoodKind;
-
-DROP VIEW Top20Area;
+DROP VIEW FoodKindRestaurants;
 
 DROP TABLE GeoUser;
 

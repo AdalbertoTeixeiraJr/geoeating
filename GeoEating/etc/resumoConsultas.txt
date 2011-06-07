@@ -1,0 +1,18 @@
+1.     Quais os restaurantes localizados em até Z metros de raio do ponto clicado?
+	  Usar função de cálculo de boundingbox direto no javascript e fazer a requisição pro geoserver
+	com o bbox calculado.
+
+2.     Qual o menor caminho (considerando distância) para o restaurante X, partindo do ponto Y (clicado pelo usuário)?
+	  Calculo de rotas com o googlemaps.
+
+3.     Um grupo de amigos em diferentes locais deseja ir a um restaurante em que todos estejam a uma distância a mais semelhante e menor possível para todos, que restaurante indicar?
+	  Usar o buffer aumentando e a consulta não vai ser no geoserver.
+
+4.     Em que área estão concentrados os restaurantes mais movimentados, levando em conta uma movimentacao maior que X pessoas por dia?
+	  Pegar os restaurantes mais movimentados, juntar os buffers que se cruzam
+
+5.     Considerando os restaurantes de um tipo X como pontos de um polígono, qual a área de cobertura atingida por esses restaurantes?
+	  Usar o convexhull do postgis
+
+6.     Quais os restaurantes da rua X que não tem fila de espera (usar Geocoding)?
+	  Pegar os pontos da rua, fazer um buffer de Z metros e pegar os restaurantes sem fila

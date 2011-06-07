@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Novo Restaurante</title>
+<script type="text/javascript">
+	function cadastra(){
+		var nome = document.getElementById('nome').value;
+		var descri = document.getElementById('descri').value;
+        var endereco = document.getElementById('endereco').value;
+        var tel = document.getElementById('tel').value;
+		var tipoComida = document.getElementById('comida').value;
+		window.opener.salvaCadastro(nome, descri, endereco, tel, tipoComida);
+		window.close();
+	}
+</script>
+</head>
+<body>
+	<div style="width: 140%; vertical-align: middle; text-align: center;">
+		<label>Nome Restaurante: </label>
+		<input type="text" id="nome" style="width: 80%"/><br>
+		<label>Descricao: </label>
+		<input type="text" id="descri" style="width: 80%"/><br>
+        <label>Endereco Web: </label>
+		<input type="text" id="endereco" style="width: 80%"/><br>
+        <label>Telefone: </label>
+		<input type="text" id="tel" style="width: 80%"/><br>
+		<label>Tipo Comida: </label>
+		<select id="comida">
+  			<option value="0">Chinesa</option>
+  			<option value="1">Fast-Food</option>
+  			<option value="2">Italiana</option>
+            <option value="3">Japonesa</option>
+            <option value="4">Regional</option>
+		</select><br>
+		<input type="button" value="Cadastrar" onclick="cadastra()"/>
+	</div>
+</body>
+</html>

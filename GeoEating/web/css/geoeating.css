@@ -1,0 +1,16 @@
+a.button {
+	display: block;
+	color: #555555;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover.button {
+	color: #0066CC;
+}
+
+.add {
+	background: url(images/add.png) no-repeat 10px 8px;
+	text-indent: 25px;
+	display: block;
+}

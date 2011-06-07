@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>GeoEating</title>
 <script type="text/javascript">
+
 </script>
 </head>
 <body >

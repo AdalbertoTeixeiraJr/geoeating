@@ -19,6 +19,10 @@
 	
 	-->
 	
+	<bean id="restaurantDAO" class="br.edu.ufcg.geoeating.dao.RestaurantDAO" scope="singleton">
+		
+	</bean>
+	
 	<!-- CONFIGURACAO HIBERNATE 
 	Exs.:
 	
@@ -94,4 +98,8 @@
     	<property name="formularioDAO" ref="formularioDAO" />
 	</bean>
      -->
+     
+     <bean id="restaurantAction" class="br.edu.ufcg.geoeating.action.RestaurantAction">
+    	<property name="restaurantDAO" ref="restaurantDAO" />
+	</bean>
 </beans>

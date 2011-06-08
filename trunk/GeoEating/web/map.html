@@ -99,7 +99,8 @@ function addPlacemarkRestaurant(node,workspace){
 
 function pegaLayer(workspace,camada){
 	var bbox = getBbox();
-	var url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=geoeating:restaurant&styles=&bbox="+bbox;
+	var layer = workspace+":"+camada;
+	var url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+layer+"&styles=&bbox="+bbox;
 	url = url+"&srs=EPSG:4326";
 	downloadUrl(url,
 			    callbackWFS, null,workspace,camada);

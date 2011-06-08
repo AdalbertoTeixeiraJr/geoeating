@@ -58,6 +58,7 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\r\n");
       out.write("<title>GeoEating</title>\r\n");
       out.write("<script type=\"text/javascript\">\r\n");
+      out.write("\r\n");
       out.write("</script>\r\n");
       out.write("</head>\r\n");
       out.write("<body >\r\n");

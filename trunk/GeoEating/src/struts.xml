@@ -10,7 +10,7 @@
     	
     	<!--  -->
     	<action name="test" class="restaurantAction" method="test" >
-    		<result name="success">/mapa.html</result>
+    		<result name="success">/map.html</result>
 	    </action>
 	    
 	    <action name="cadastrar" class="restaurantAction" method="cadastrar" >

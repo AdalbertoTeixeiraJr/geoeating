@@ -8,6 +8,7 @@ var op;
 var fonte;
 var destino;
 var geocoder;
+var lastClick;
 
 function initialize() {
 	geocoder = new google.maps.Geocoder();
@@ -36,6 +37,7 @@ function initialize() {
 			op = 0;
 			fonte = -1;
 			destino = -1;
+			lastClick = event.latLng;
 			abreCadastro();
 		} else if (op == 2) {
 			tempDest = new google.maps.Marker({

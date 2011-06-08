@@ -1,12 +1,17 @@
 package br.edu.ufcg.geoeating.bean;
 
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -16,6 +21,8 @@ import javax.validation.constraints.NotNull;
 @Table(name = "Restaurant")
 public class Restaurant {
 	
+	public static final int SRID = 4326;
+
 	@Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
@@ -96,5 +103,12 @@ public class Restaurant {
 	public void setHistories(History histories) {
 		this.history = histories;
 	}
-	
+
+	public History getHistory() {
+		return history;
+	}
+
+	public void setHistory(History history) {
+		this.history = history;
+	}
 }

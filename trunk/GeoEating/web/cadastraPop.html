@@ -4,36 +4,161 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Novo Restaurante</title>
 <script type="text/javascript">
+	var latLong;
+	
+	function initialize(){
+		//alert("entrou");
+		latLong = window.opener.lastClick;
+		//alert("pegou latLong"+latLong);
+	}
+
+
+	function ajaxInit() {
+	    var req;
+	    req = new XMLHttpRequest();
+	    return req;
+	}
+
+	function verificaCaratere(tel){
+		var input = document.getElementById(tel);
+		if(input.value.length>0){
+			var ultimoChar = input.value.charAt(input.value.length-1);
+			if(ultimoChar!='0' && ultimoChar!='1' && ultimoChar!='2' && ultimoChar!='3' && ultimoChar!='4' && ultimoChar!='5' && ultimoChar!='6' && ultimoChar!='7' && ultimoChar!='8' && ultimoChar!='9'){
+				input.value = replaceAll(input.value,ultimoChar,"");
+			}
+		}
+	}
+
+	function replaceAll(string, token, newtoken) {
+		while (string.indexOf(token) != -1) {
+	 		string = string.replace(token, newtoken);
+		}
+		return string;
+	}
+	
+	
 	function cadastra(){
 		var nome = document.getElementById('nome').value;
+		var dadosOk = false;
 		var descri = document.getElementById('descri').value;
         var endereco = document.getElementById('endereco').value;
         var tel = document.getElementById('tel').value;
-		var tipoComida = document.getElementById('comida').value;
-		window.opener.salvaCadastro(nome, descri, endereco, tel, tipoComida);
-		window.close();
+        var tipos =  new Array();
+        if(document.getElementById('comidaRegional').checked){
+        	tipos[0] = document.getElementById('comidaRegional').value.toString();
+        }else{
+        	tipos[0] = "";
+        }
+        if(document.getElementById('comidaJaponesa').checked){
+        	tipos[1] = document.getElementById('comidaJaponesa').value.toString();
+        }else{
+        	tipos[1] = "";
+        }
+        if(document.getElementById('comidaItaliana').checked){
+        	tipos[2] = document.getElementById('comidaItaliana').value.toString();
+        }else{
+        	tipos[2] = "";
+        }
+        if(document.getElementById('comidaChin').checked){
+    	    tipos[3] = document.getElementById('comidaChin').value.toString();
+        }else{
+        	tipos[3] = "";
+        }
+        if(document.getElementById('comidaFastFood').checked){
+        	tipos[4] = document.getElementById('comidaFastFood').value.toString();
+        }else{
+        	tipos[4] = "";
+        }
+        if(document.getElementById('comidaLanche').checked){
+        	tipos[5] = document.getElementById('comidaLanche').value.toString();
+        }else{
+        	tipos[5] = "";
+        }
+        
+        if(document.getElementById('comidaOutras').checked){
+        	tipos[6] = document.getElementById('comidaOutras').value.toString();
+        }else{
+        	tipos[6] = "";
+        }
+
+        var dadosOk = (latLong!=null);
+        dadosOk = dadosOk  && nome!='';
+        var tiposOk = (tipos[0]!='' || tipos[1]!='' || tipos[2]!='' || tipos[3]!='' || tipos[4]!='' || tipos[5]!='' || tipos[6]!='');
+        daodsOk = dadosOk  && tiposOk;
+        if(dadosOk){
+        	var tiposAtt = ""+tipos[0]+" "+tipos[1]+" "+tipos[2]+" "+tipos[3]+" "+tipos[4]+" "+tipos[5]+" "+tipos[6];
+    		var latLongStr = ""+latLong;
+    		latLongStr = latLongStr.replace("(","");
+    		latLongStr = latLongStr.replace(")","");
+    		latLongStr = latLongStr.replace(","," ");
+    		var urlWithoutParams = "http://localhost:8080/GeoEating/cadastrar.action?";
+    		var url = urlWithoutParams+"name="+nome.toString();
+    		url = url+ "&description="+descri.toString();
+    		url = url+ "&tel="+tel.toString();
+    		url = url+ "&endWeb="+endereco.toString();
+    		url = url+ "&tiposFood="+tiposAtt.toString().replace(","," ");
+    		url = url+ "&latLong="+latLongStr.toString()+"";
+    		alert(url);
+            var wmDiv = document.getElementById("resultado");
+    	    ajax = ajaxInit();
+    	    ajax.open("GET", url, true);
+    	    ajax.onreadystatechange=function() {
+    	           //readyState==1 Indica que está carregando, nessa hora que colocamos aquele Loading...
+    	            if (ajax.readyState==1){
+    	                    wmDiv.innerHTML = "<p style=´text-decoration: blink;´>Salvando...</p>"; //se preferir faça um gif piscando sei la
+    	            }
+    	            if (ajax.readyState==4){
+    	                   if(ajax.responseText == "1"){
+    							alert('Restaurante Cadastrado');
+    							window.close();
+    	                   }else{
+    					   		alert('Cadastro não pode ser realizado.\nVerifique os dados fornecidos e tente novamente.');
+    	                   }
+    	            }
+    	    }
+    	    
+    	    ajax.send(null);
+        }
 	}
+	
 </script>
 </head>
-<body>
-	<div style="width: 140%; vertical-align: middle; text-align: center;">
-		<label>Nome Restaurante: </label>
-		<input type="text" id="nome" style="width: 80%"/><br>
-		<label>Descricao: </label>
-		<input type="text" id="descri" style="width: 80%"/><br>
-        <label>Endereco Web: </label>
-		<input type="text" id="endereco" style="width: 80%"/><br>
-        <label>Telefone: </label>
-		<input type="text" id="tel" style="width: 80%"/><br>
-		<label>Tipo Comida: </label>
-		<select id="comida">
-  			<option value="0">Chinesa</option>
-  			<option value="1">Fast-Food</option>
-  			<option value="2">Italiana</option>
-            <option value="3">Japonesa</option>
-            <option value="4">Regional</option>
-		</select><br>
-		<input type="button" value="Cadastrar" onclick="cadastra()"/>
+<body onload="initialize()">
+	<div style="width: 100%; vertical-align: middle; text-align: left;">
+	<table>
+		<tr>
+			<td><label>Nome Restaurante: </label></td>
+			<td><input type="text" id="nome" style="width: 100%"/></td>
+		</tr>
+		<tr>
+			<td><label>Descricao: </label></td>
+			<td><input type="text" id="descri" style="width: 100%"/></td>
+		</tr>
+		<tr>
+			<td><label>Endereco Web: </label></td>
+			<td><input type="text" id="endereco" style="width: 100%"/></td>
+		</tr>
+		<tr>
+			<td><label>Telefone: </label></td>
+			<td><input type="text" onkeyup="verificaCaratere('tel')" id="tel" style="width: 100%"/></td>
+		</tr>
+		<tr>
+			<td><label>Tipo Comida: </label></td>
+			<td>
+				<input name="comidaRegional" id="comidaRegional" type="checkbox" value="1">Regional 
+				<input name="comidaJaponesa" id="comidaJaponesa" type="checkbox" value="2">Japonesa 
+				<input name="comidaItaliana" id="comidaItaliana" type="checkbox" value="3">Italiana 
+				<input name="comidaChin" id="comidaChin" type="checkbox" value="4">Chinesa 
+				<input name="comidaFastFood" id="comidaFastFood" type="checkbox" value="5">FastFood
+				<input name="comidaLanche" id="comidaLanche" type="checkbox" value="6">Lanche 
+				<input name="comidaOutras" id="comidaOutras" type="checkbox" value="7">Outras
+			</td>
+		</tr>
+		<tr>
+			<div align="center"><input type="button" value="Salvar" onclick="cadastra()"/></div>
+		</tr>
+	</table>
 	</div>
+	<div id="resultado"></div>
 </body>
 </html>

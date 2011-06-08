@@ -13,6 +13,9 @@
     		<result name="success">/mapa.html</result>
 	    </action>
 	    
+	    <action name="cadastrar" class="restaurantAction" method="cadastrar" >
+	    </action>
+	    
 	        <!-- Add actions here
 	        	Exs.:
 	        	

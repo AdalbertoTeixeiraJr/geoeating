@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="MostMovimented")
+@Table(name="MovimentedRestaurant")
 public class History {
 	
 	@Id

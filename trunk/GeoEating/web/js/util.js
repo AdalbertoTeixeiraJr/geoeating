@@ -24,7 +24,7 @@ function createXmlHttpRequest() {
 * @param {String} url The URL to retrieve
 * @param {Function} callback The function to call once retrieved.
 */
-function downloadUrl(url, callback, postData,workspace,camada) {
+function downloadUrl(url, callback, postData,workspace,camada,geomColumn) {
  var status = -1;
  var request = createXmlHttpRequest();
  if (!request) {
@@ -38,7 +38,7 @@ function downloadUrl(url, callback, postData,workspace,camada) {
        // Usually indicates request timed out in FF.
      }
      if (status == 200) {
-       callbackWFS(request.responseXML, request.status,workspace,camada);
+       callbackWFS(request.responseXML, request.status,workspace,camada,geomColumn);
        request.onreadystatechange = function() {};
      }
    }

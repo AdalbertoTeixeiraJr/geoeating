@@ -25,7 +25,7 @@ function initialize() {
 
 	var myOptions = {
 		  zoom: 13,
-		  minZoom:13,
+		  minZoom:0,
 		  center: latlng,
 		  mapTypeId: google.maps.MapTypeId.ROADMAP,
 		  scaleControl: true
@@ -86,7 +86,6 @@ function initialize() {
 			circulo.setMap(map);
 		}
 	});
-	inicializado = true;
 }
 
 function salvaCadastro(nome, descricao, endereco, tel, comida) {

@@ -26,10 +26,10 @@ var layers = [];
 var workspace = "geoeating";
 
 function updateMapLayers(){
-	if(layers.length>0){
+	if(layers && layers.length>0){
 		limpaPlacemarks();
 		for(i in layers){
-			pegaLayer(workspace,layers[i]);
+			pegaLayer(workspace,layers[i].layer,layers[i].geomColumn);
 		}
 	}
 }
@@ -42,30 +42,31 @@ function limpaPlacemarks(){
 	restaurantes = [];
 }
 
-function callbackWFS(responseXML, status,workspace,layer){
+function callbackWFS(responseXML, status,workspace,layer,geomColumn){
 	var wfsCollection = responseXML.firstChild;
 	if(wfsCollection.nodeName == "wfs:FeatureCollection"){
 		var wfsChilds = wfsCollection.childNodes;
+		alert(wfsChilds.length);
 		for(var i=0;i<wfsChilds.length;i++){
 			var node = wfsChilds.item(i);
 			if(node.nodeName == "gml:featureMember"){
 				var camada = node.firstChild;
 				if(camada.nodeName == workspace+":"+layer){
-					addPlacemarkRestaurant(camada,workspace);
+					addPlacemarkRestaurant(camada,workspace,geomColumn);
 				}
 			}
 		}
 	}
 }
 
-function addPlacemarkRestaurant(node,workspace){
+function addPlacemarkRestaurant(node,workspace,geomColumn){
 	var htmlDescription = '<table>';
 	var childNodes = node.childNodes;
 	var lat; var lon;
 
 	for(var i=0;i<childNodes.length;i++){
 		var child = childNodes.item(i);
-		if(child.nodeName == workspace+":geom"){
+		if(child.nodeName == workspace+":"+geomColumn){
 			if(child.firstChild.firstChild){
 				var coords = child.firstChild.firstChild;
 				if(coords.nodeName == "gml:coordinates"){
@@ -97,13 +98,14 @@ function addPlacemarkRestaurant(node,workspace){
 	restaurantes.push(marker);
 }
 
-function pegaLayer(workspace,camada){
+function pegaLayer(workspace,camada,geomColumn){
 	var bbox = getBbox();
 	var layer = workspace+":"+camada;
 	var url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+layer+"&styles=&bbox="+bbox;
 	url = url+"&srs=EPSG:4326";
+	alert(url);
 	downloadUrl(url,
-			    callbackWFS, null,workspace,camada);
+			    callbackWFS, null,workspace,camada,geomColumn);
 }
 
 function abreCadastro() {
@@ -127,15 +129,16 @@ function getBbox(){
 	
 }
 
-function addLayer(input,layer){
+function addLayer(input,layer,geomColumn){
+	inicializado = true;
 	var checked = input.checked;
 	for(i in layers){
-		if(layers[i] == layer){
+		if(layers[i].layer == layer){
 			layers.splice(i,1);
 		}
 	}
 	if(checked){
-		layers.push(layer);
+		layers.push({"layer":layer, "geomColumn":geomColumn});
 	}
 
 	updateMapLayers();
@@ -195,7 +198,7 @@ function addLayer(input,layer){
 									<button type="submit" class="positive" onclick="procurarPorEnd()">
 										<img src="images/find.png" alt="" /> Procurar por endere&ccedil;o
 									</button>
-									<input type="checkbox" onchange="addLayer(this,'restaurant')" id="checkRestaurantsLayer" />Restaurantes
+									<input type="checkbox" onchange="addLayer(this,'restaurant','geom')" id="checkRestaurantsLayer" />Restaurantes
 									<input type="button" onclick="updateMapLayers()" value="UpdateMap"/>
 								</div>
 							</td>

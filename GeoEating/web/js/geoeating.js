@@ -81,8 +81,7 @@ function abreCadastro() {
 	window
 			.open(
 					'cadastraPop.html',
-					'Pagina',
-					'STATUS=NO, TOOLBAR=NO, LOCATION=NO, DIRECTORIES=NO, RESISABLE=NO, SCROLLBARS=YES, TOP=10, LEFT=10, WIDTH=800, HEIGHT=200');
+					'mywindow', 'width=500,height=200');
 }
 
 function salvaCadastro(nome, descricao, endereco, tel, comida) {

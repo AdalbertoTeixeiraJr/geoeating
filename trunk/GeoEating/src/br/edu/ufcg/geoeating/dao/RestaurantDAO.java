@@ -48,9 +48,8 @@ public class RestaurantDAO {
 			Query q = getEm().createQuery(query);
 			q.executeUpdate();
 			
-			String removeRelations = "DELETE FROM RestaurantFoodKind WHERE id_restaurant = ?";
-			q = getEm().createQuery(removeRelations);
-			q.setParameter(1, r.getId());
+			String removeRelations = "DELETE FROM RestaurantFoodKind WHERE id_restaurant = "+r.getId();
+			q = getEm().createNativeQuery(removeRelations);
 			q.executeUpdate();
 		}
 		for (FoodKindRelation foodKindRelation : relations) {

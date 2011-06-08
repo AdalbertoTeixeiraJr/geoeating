@@ -2,6 +2,7 @@ package br.edu.ufcg.geoeating.action;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +46,7 @@ public class RestaurantAction extends ActionSupport{
 			dos = new DataOutputStream(response.getOutputStream());
 			if(name!=null && latLong!=null){
 				try {
-					int telInt = Integer.parseInt(tel);
+					Long telInt = new Long(tel);
 					Restaurant r = new Restaurant();
 					r.setQttWaiting(0);
 					r.setName(name);

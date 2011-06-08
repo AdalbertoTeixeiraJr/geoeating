@@ -1,6 +1,7 @@
 package br.edu.ufcg.geoeating.bean;
 
 
+import java.math.BigInteger;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -39,7 +40,7 @@ public class Restaurant {
 	private String description;
 	
 	@Column(name = "tel")
-	private Integer tel;
+	private Long tel;
 	
 	@Column(name = "end_web")
 	private String endWeb;
@@ -80,12 +81,12 @@ public class Restaurant {
 		this.description = description;
 	}
 
-	public Integer getTel() {
+	public Long getTel() {
 		return tel;
 	}
 
-	public void setTel(Integer tel) {
-		this.tel = tel;
+	public void setTel(Long telInt) {
+		this.tel = telInt;
 	}
 
 	public String getEndWeb() {

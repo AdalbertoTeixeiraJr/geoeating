@@ -96,7 +96,6 @@
     		url = url+ "&endWeb="+endereco.toString();
     		url = url+ "&tiposFood="+tiposAtt.toString().replace(","," ");
     		url = url+ "&latLong="+latLongStr.toString()+"";
-    		alert(url);
             var wmDiv = document.getElementById("resultado");
     	    ajax = ajaxInit();
     	    ajax.open("GET", url, true);
@@ -108,6 +107,7 @@
     	            if (ajax.readyState==4){
     	                   if(ajax.responseText == "1"){
     							alert('Restaurante Cadastrado');
+    							window.opener.botaNoCentro(latLong);
     							window.close();
     	                   }else{
     					   		alert('Cadastro não pode ser realizado.\nVerifique os dados fornecidos e tente novamente.');
@@ -137,7 +137,7 @@
 			<td><input type="text" id="endereco" style="width: 100%"/></td>
 		</tr>
 		<tr>
-			<td><label>Telefone: </label></td>
+			<td><label>Telefone (DDD+número): </label></td>
 			<td><input type="text" onkeyup="verificaCaratere('tel')" id="tel" style="width: 100%"/></td>
 		</tr>
 		<tr>
@@ -145,15 +145,17 @@
 			<td>
 				<input name="comidaRegional" id="comidaRegional" type="checkbox" value="1">Regional 
 				<input name="comidaJaponesa" id="comidaJaponesa" type="checkbox" value="2">Japonesa 
-				<input name="comidaItaliana" id="comidaItaliana" type="checkbox" value="3">Italiana 
+				<input name="comidaItaliana" id="comidaItaliana" type="checkbox" value="3">Italiana <br>
 				<input name="comidaChin" id="comidaChin" type="checkbox" value="4">Chinesa 
 				<input name="comidaFastFood" id="comidaFastFood" type="checkbox" value="5">FastFood
-				<input name="comidaLanche" id="comidaLanche" type="checkbox" value="6">Lanche 
+				<input name="comidaLanche" id="comidaLanche" type="checkbox" value="6">Lanche<br>
 				<input name="comidaOutras" id="comidaOutras" type="checkbox" value="7">Outras
 			</td>
 		</tr>
 		<tr>
-			<div align="center"><input type="button" value="Salvar" onclick="cadastra()"/></div>
+			<td align="center">
+				<input type="button" value="Salvar" onclick="cadastra()"/>
+			</td>
 		</tr>
 	</table>
 	</div>

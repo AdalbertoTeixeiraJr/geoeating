@@ -8,9 +8,10 @@ var op;
 var fonte;
 var destino;
 var geocoder;
-var lastClick;
+var inicializado;
 
 function initialize() {
+	incializado = false;
 	geocoder = new google.maps.Geocoder();
 	directionsDisplay = new google.maps.DirectionsRenderer();
 	directionsService = new google.maps.DirectionsService();
@@ -23,22 +24,30 @@ function initialize() {
 	});
 
 	var myOptions = {
-		zoom : 14,
-		center : latlng,
-		mapTypeId : google.maps.MapTypeId.ROADMAP
+		  zoom: 13,
+		  minZoom:13,
+		  center: latlng,
+		  mapTypeId: google.maps.MapTypeId.ROADMAP,
+		  scaleControl: true
 	};
 
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-
+	google.maps.event.addListener(map, 'bounds_changed', function(event) {
+		if(inicializado){
+			updateMapLayers();
+		}
+	});
 	google.maps.event.addListener(map, 'click', function(event) {
 		limpa();
 		if (op == 1) {
-			placeMarker(event.latLng);
+			
+			//placeMarker(event.latLng);
 			op = 0;
 			fonte = -1;
 			destino = -1;
 			lastClick = event.latLng;
 			abreCadastro();
+			//map.setCenter(event.latLng);
 		} else if (op == 2) {
 			tempDest = new google.maps.Marker({
 				position : event.latLng,
@@ -77,13 +86,7 @@ function initialize() {
 			circulo.setMap(map);
 		}
 	});
-}
-
-function abreCadastro() {
-	window
-			.open(
-					'cadastraPop.html',
-					'mywindow', 'width=500,height=200');
+	inicializado = true;
 }
 
 function salvaCadastro(nome, descricao, endereco, tel, comida) {

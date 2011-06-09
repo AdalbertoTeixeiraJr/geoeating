@@ -86,6 +86,7 @@ function cadastra() {
 		url = url + "&tiposFood=" + tiposAtt.toString().replace(",", " ");
 		url = url + "&latLong=" + latLongStr.toString() + "";
 		var wmDiv = document.getElementById("resultado");
+		
 		ajax = ajaxInit();
 		ajax.open("GET", url, true);
 		ajax.onreadystatechange = function() {
@@ -104,4 +105,26 @@ function cadastra() {
 
 		ajax.send(null);
 	}
+}
+
+function atualizarFila(latitude,longitude,valor) {
+	var urlWithoutParams = "http://localhost:8080/geoeating/atualizarFila.action?";
+	var url = urlWithoutParams + "latitudeRest=" + latitude;
+	var url = urlWithoutParams + "longitudeRest=" + longitude;
+	url = url + "&novaFila=" + valor;
+
+	ajax = ajaxInit();
+	ajax.open("GET", url, true);
+	ajax.onreadystatechange = function() {
+		// readyState==1 Indica que está carregando, nessa hora que
+		// colocamos aquele Loading...
+		if (ajax.readyState == 4) {
+			if (ajax.responseText == "1") {
+				alert('Fila atualizada!');
+			} else {
+				alert('Fila nao pode ser atualizada! Verifique o valor que voce definiu.');
+			}
+		}
+	}
+	ajax.send(null);
 }

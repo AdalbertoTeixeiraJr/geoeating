@@ -9,7 +9,6 @@ import javax.persistence.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import br.edu.ufcg.geoeating.bean.FoodKindRelation;
 import br.edu.ufcg.geoeating.bean.Restaurant;
 
@@ -68,5 +67,16 @@ public class RestaurantDAO {
 		}catch(Throwable t){
 			t.printStackTrace();
 		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public Restaurant getRestaurant(int id) {
+		return getEm().find(Restaurant.class, id);
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public boolean updateWaitRestaurantByLatLng(String latitude, String longitude, Integer valor) {
+		Query query = getEm().createNativeQuery("UPDATE Restaurant r SET qtt_waiting = " + valor + " WHERE AsText(r.geom)='POINT(" + longitude + " " + latitude + ")'");
+		return query.executeUpdate() == 1;
 	}
 }

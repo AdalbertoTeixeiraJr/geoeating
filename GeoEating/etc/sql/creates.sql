@@ -3,7 +3,7 @@ CREATE TABLE Restaurant(
 	name VARCHAR(255),
 	qtt_waiting INTEGER,
 	description VARCHAR(255),
-	tel INTEGER,
+	tel BIGINT,
 	end_web VARCHAR(255)
 );
 
@@ -38,22 +38,11 @@ CREATE TABLE GeoUser(
 	passwd VARCHAR(255)
 );
 
-DROP VIEW MostMovimented;
-
-DROP VIEW FoodKindGeom;
-
-DROP VIEW RestaurantNoWait;
-
-DROP VIEW RestaurantsFoodKind;
-
-DROP VIEW Top20Area;
-
 CREATE OR REPLACE VIEW FoodKindGeom AS 
 SELECT DISTINCT r.id, rfk.id_foodkind, buffer(geom,0.005)
 FROM restaurant r 
 	INNER JOIN restaurantfoodkind rfk ON r.id = rfk.id_restaurant 
 GROUP BY r.id,rfk.id_foodkind,r.geom;
-
 
 CREATE OR REPLACE VIEW MovimentedRestaurant AS 
 SELECT DISTINCT r.id, CAST(AVG(h.qtt) AS DOUBLE PRECISION) AS average,geom
@@ -61,7 +50,6 @@ FROM restaurant r
 	INNER JOIN history h ON r.id = h.id_restaurant 
 GROUP BY r.id,r.geom
 ORDER BY average DESC;
-
 
 CREATE OR REPLACE VIEW RestaurantNoWait AS
 SELECT DISTINCT r.id, r.geom
@@ -74,9 +62,14 @@ FROM restaurant r
 	INNER JOIN restaurantfoodkind rfk ON r.id = rfk.id_restaurant 
 GROUP BY r.id,rfk.id_foodkind,r.geom;
 
-	
 CREATE OR REPLACE VIEW Top20Area AS
 SELECT DISTINCT r.id, buffer(r.geom,0.005)
 FROM restaurant r 
 WHERE r.id IN (SELECT mv.id FROM MovimentedRestaurant mv
 ORDER BY mv.average DESC LIMIT 20);
+
+CREATE OR REPLACE VIEW AllRestaurants AS
+SELECT r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fk.name AS fkname
+FROM restaurant r, foodkind fk, restaurantfoodkind rfk
+WHERE r.id = rfk.id_restaurant AND fk.id = rfk.id_foodkind
+GROUP BY r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fkname

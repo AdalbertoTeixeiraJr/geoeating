@@ -78,18 +78,16 @@
         }else{
         	tipos[6] = "";
         }
-
         var dadosOk = (latLong!=null);
         dadosOk = dadosOk  && nome!='';
         var tiposOk = (tipos[0]!='' || tipos[1]!='' || tipos[2]!='' || tipos[3]!='' || tipos[4]!='' || tipos[5]!='' || tipos[6]!='');
-        daodsOk = dadosOk  && tiposOk;
-        if(dadosOk){
+        if(dadosOk  && tiposOk){
         	var tiposAtt = ""+tipos[0]+" "+tipos[1]+" "+tipos[2]+" "+tipos[3]+" "+tipos[4]+" "+tipos[5]+" "+tipos[6];
     		var latLongStr = ""+latLong;
     		latLongStr = latLongStr.replace("(","");
     		latLongStr = latLongStr.replace(")","");
     		latLongStr = latLongStr.replace(","," ");
-    		var urlWithoutParams = "http://localhost:8080/GeoEating/cadastrar.action?";
+    		var urlWithoutParams = "http://localhost:8080/geoeating/cadastrar.action?";
     		var url = urlWithoutParams+"name="+nome.toString();
     		url = url+ "&description="+descri.toString();
     		url = url+ "&tel="+tel.toString();
@@ -107,7 +105,7 @@
     	            if (ajax.readyState==4){
     	                   if(ajax.responseText == "1"){
     							alert('Restaurante Cadastrado');
-    							window.opener.botaNoCentro(latLong);
+    							window.opener.setCentro(latLong);
     							window.close();
     	                   }else{
     					   		alert('Cadastro não pode ser realizado.\nVerifique os dados fornecidos e tente novamente.');

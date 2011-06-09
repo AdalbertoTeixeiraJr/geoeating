@@ -26,8 +26,8 @@ var layers = [];
 var workspace = "geoeating";
 
 function updateMapLayers(){
+	limpaPlacemarks();
 	if(layers && layers.length>0){
-		limpaPlacemarks();
 		for(i in layers){
 			pegaLayer(workspace,layers[i].layer,layers[i].geomColumn);
 		}
@@ -35,35 +35,67 @@ function updateMapLayers(){
 }
 
 function limpaPlacemarks(){
-	for(j in restaurantes){
-		restaurantes[j].setMap(null);
+	if (restaurantes) {
+		for(j in restaurantes){
+			restaurantes[j].m.setMap(null);
+		}
 	}
-
 	restaurantes = [];
+}
+
+function addFoodType(restaurante,foodType) {
+	for (i in restaurante.foodTypes) {
+		if (restaurante.foodTypes[i]==foodType) {
+			return;
+		}
+	}
+	restaurante.foodTypes.push(foodType);
 }
 
 function callbackWFS(responseXML, status,workspace,layer,geomColumn){
 	var wfsCollection = responseXML.firstChild;
 	if(wfsCollection.nodeName == "wfs:FeatureCollection"){
 		var wfsChilds = wfsCollection.childNodes;
-		alert(wfsChilds.length);
 		for(var i=0;i<wfsChilds.length;i++){
 			var node = wfsChilds.item(i);
 			if(node.nodeName == "gml:featureMember"){
 				var camada = node.firstChild;
 				if(camada.nodeName == workspace+":"+layer){
-					addPlacemarkRestaurant(camada,workspace,geomColumn);
+					parseRestaurant(camada,workspace,geomColumn);
 				}
 			}
 		}
 	}
+	setStylesForMarkers();
 }
 
-function addPlacemarkRestaurant(node,workspace,geomColumn){
-	var htmlDescription = '<table>';
-	var childNodes = node.childNodes;
-	var lat; var lon;
+function setStylesForMarkers() {
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var r = restaurantes[i];
+		    var contentString = '<p><b>Nome: </b> ' + r.name + '</p>';
+		    contentString += '<p><b>Descri&ccedil;&atilde;o: </b> ' + r.description + '</p>';
+		    contentString += '<p><b>Tipos de Comida: </b> ' + r.foodTypes.toString() + '</p>';
+		    contentString += '<p><b>Quantidade em Espera: </b> ' + r.wait + '</p>';
+		    contentString += '<p><b>Telefone: </b> ' + r.tel + '</p>';
+		    contentString += '<p><b>Endere&ccedil;o WEB: </b> <a href="' + r.web + '">' + r.web + '</a></p>';
+		    r.info.setContent(contentString);
+		    r.m.setIcon(getIconName(r));
+		}
+	}
+}
 
+function parseRestaurant(node,workspace,geomColumn){
+	var childNodes = node.childNodes;
+	var lat;
+	var lon;
+	var nome = "";
+	var filaDeEspera = "";
+	var descricao = "";
+	var telefone = "";
+	var end_web = "";
+	var tipo_comida = "";
+	
 	for(var i=0;i<childNodes.length;i++){
 		var child = childNodes.item(i);
 		if(child.nodeName == workspace+":"+geomColumn){
@@ -75,27 +107,74 @@ function addPlacemarkRestaurant(node,workspace,geomColumn){
 					lat = new Number(coord[1]);
 				}
 			}
+		} else if (child.nodeName == workspace+":name"){
+			nome = child.textContent;
+		} else if (child.nodeName == workspace+":qtt_waiting"){
+			filaDeEspera = child.textContent;
+		} else if (child.nodeName == workspace+":description"){
+			descricao = child.textContent;
+		} else if (child.nodeName == workspace+":tel"){
+			telefone = child.textContent;
+		} else if (child.nodeName == workspace+":end_web"){
+			end_web = child.textContent;
+		} else if (child.nodeName == workspace+":fkname") {
+			tipo_comida = child.textContent;
 		}
 	}
-	htmlDescription = htmlDescription+'</table>';
+
 	var location = new google.maps.LatLng(lat,lon);
+	var restaurante = getRestauranteByLocation(location);
+	if (restaurante != null) { // restaurante ja foi criado, apenas adiciona o tipo de comida
+		addFoodType(restaurante,tipo_comida);
+		return;
+	}
+
 	var marker = new google.maps.Marker({
 		position : location,
 		map : map,
-		title : "Restaurante",
-		icon : "images/rest.png"
+		title : nome
 	});
+	
+    var infowindow = new google.maps.InfoWindow({
+        content: ""
+    });
 
 	google.maps.event.addListener(marker, 'click', function(event) {
 		if (op == 2) {
 			destino = event.latLng;
 			if (fonte != -1) {
+				// consulta 2
 				calcRoute(fonte, destino);
 			}
+		} else {
+		    infowindow.open(map, marker);
 		}
 	});
-	//map.setCenter(location);
-	restaurantes.push(marker);
+	
+	restaurante = {
+			name : nome,
+			description : descricao,
+			wait : parseInt(filaDeEspera),
+			m : marker,
+			tel : telefone,
+			web : end_web,
+			foodTypes : [],
+			info : infowindow
+	};
+	addFoodType(restaurante,tipo_comida);
+	restaurantes.push(restaurante);
+}
+
+function getRestauranteByLocation(location) {
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var r = restaurantes[i];
+		    if (r.m.getPosition().lat()==location.lat() && r.m.getPosition().lng()==location.lng()) {
+		    	return r;
+		    }
+		}
+	}
+	return null;
 }
 
 function pegaLayer(workspace,camada,geomColumn){
@@ -103,9 +182,13 @@ function pegaLayer(workspace,camada,geomColumn){
 	var layer = workspace+":"+camada;
 	var url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+layer+"&styles=&bbox="+bbox;
 	url = url+"&srs=EPSG:4326";
-	alert(url);
-	downloadUrl(url,
-			    callbackWFS, null,workspace,camada,geomColumn);
+	downloadUrl(url,callbackWFS, null,workspace,camada,geomColumn);
+}
+
+function setCentro(ponto) {
+	if (map) {
+		map.setCenter(ponto);
+	}
 }
 
 function abreCadastro() {
@@ -137,40 +220,18 @@ function addLayer(input,layer,geomColumn){
 			layers.splice(i,1);
 		}
 	}
+	addLayerOnMap(checked,layer,geomColumn);
+}
+
+function addLayerOnMap(checked,layer,geomColumn) {
 	if(checked){
 		layers.push({"layer":layer, "geomColumn":geomColumn});
 	}
-
 	updateMapLayers();
 }
-
-
-/*
- * 
-	if(!customMapType){
-		var rasterOptions = {
-			     getTileUrl: function(coord, zoom) {
-			       return "http://localhost:8080/geoserver/gwc/service/gmaps?layers=geoeating:restaurant&gridSet=EPSG:4326" +
-			        "&zoom=" + zoom + "&x=" + coord.x + "&y=" + coord.y + "&format=image/png";
-			     },
-			     tileSize: new google.maps.Size(256,256),
-			     isPng: true,
-			     opacity: 0.9,
-			  	 minZoom: 13,
-			     name: "Restaurantes",
-			     alt: "Restaurantes"
-			 };
-
-			customMapType = new google.maps.ImageMapType(rasterOptions);
-			map.overlayMapTypes.insertAt(0, customMapType);
-	}else{
-		map.overlayMapTypes.removeAt(0);
-		customMapType = null;
-	}
- */
-
 </script>
-<script type="text/javascript" src="js/geoeating.js"></script>
+<script type="text/javascript" src="js/geoeating.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/geolocation.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/util.js"></script>
 </head>
 <body onLoad="initialize()">
@@ -198,7 +259,9 @@ function addLayer(input,layer,geomColumn){
 									<button type="submit" class="positive" onclick="procurarPorEnd()">
 										<img src="images/find.png" alt="" /> Procurar por endere&ccedil;o
 									</button>
-									<input type="checkbox" onchange="addLayer(this,'restaurant','geom')" id="checkRestaurantsLayer" />Restaurantes
+									<hr/>
+									
+									<input type="checkbox" onchange="addLayer(this,'allrestaurants','geom')" id="checkRestaurantsLayer" />Restaurantes
 									<input type="button" onclick="updateMapLayers()" value="UpdateMap"/>
 								</div>
 							</td>

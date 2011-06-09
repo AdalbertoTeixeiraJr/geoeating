@@ -9,8 +9,13 @@ var fonte;
 var destino;
 var geocoder;
 var inicializado;
+var geocodeResults;
 
 function initialize() {
+	if (document.getElementById("checkRestaurantsLayer")) {
+		document.getElementById("checkRestaurantsLayer").checked="";
+	}
+	
 	incializado = false;
 	geocoder = new google.maps.Geocoder();
 	directionsDisplay = new google.maps.DirectionsRenderer();
@@ -40,14 +45,11 @@ function initialize() {
 	google.maps.event.addListener(map, 'click', function(event) {
 		limpa();
 		if (op == 1) {
-			
-			//placeMarker(event.latLng);
 			op = 0;
 			fonte = -1;
 			destino = -1;
 			lastClick = event.latLng;
 			abreCadastro();
-			//map.setCenter(event.latLng);
 		} else if (op == 2) {
 			tempDest = new google.maps.Marker({
 				position : event.latLng,
@@ -74,42 +76,11 @@ function initialize() {
 				fillColor : "#FF0000",
 				fillOpacity : 0.35
 			});
-			if (restaurantes) {
-				for (i in restaurantes) {
-					if (circulo.getBounds().contains(
-							restaurantes[i].getPosition())) {
-						restaurantes[i].setIcon("images/target.png");
-					}
-				}
-			}
 			map.fitBounds(circulo.getBounds());
 			circulo.setMap(map);
+			op = 0;
 		}
 	});
-}
-
-function salvaCadastro(nome, descricao, endereco, tel, comida) {
-}
-
-function placeMarker(location) {
-	var clickedLocation = new google.maps.LatLng(location);
-	var marker = new google.maps.Marker({
-		position : location,
-		map : map,
-		title : "Restaurante",
-		icon : "images/rest.png"
-	});
-
-	google.maps.event.addListener(marker, 'click', function(event) {
-		if (op == 2) {
-			destino = event.latLng;
-			if (fonte != -1) {
-				calcRoute(fonte, destino);
-			}
-		}
-	});
-	map.setCenter(location);
-	restaurantes.push(marker);
 }
 
 function limpa() {
@@ -122,13 +93,63 @@ function limpa() {
 
 	if (circulo) {
 		circulo.setMap(null);
+		circulo = null;
+	}
+	
+	if (geocodeResults) {
+		geocodeResults = [];
 	}
 
 	if (restaurantes) {
 		for (i in restaurantes) {
-			restaurantes[i].setIcon("images/rest.png");
+			restaurantes[i].m.setIcon(getIconName(restaurantes[i]));
 		}
 	}
+}
+
+function getIconName(restaurante) {
+	if (geocodeResults) {
+		// consulta 6
+		for (i in geocodeResults) {
+			if (geocodeResults[i].geometry.bounds.contains(restaurante.m.getPosition()) && restaurante.wait == 0) {
+				return "images/target.png";
+			}
+		}
+	} 
+	if (circulo) {
+		// consulta 1
+		if (distancia(restaurante.m.getPosition().lat(), restaurante.m.getPosition().lng(), circulo.getCenter().lat(), circulo.getCenter().lng()) <= (circulo.getRadius()/1000)) {
+			return "images/target.png";
+		}
+	} 
+	if (restaurante.foodTypes.length > 1) {
+		return "images/food.png";
+	}
+	if (restaurante.foodTypes.length == 0) {
+		return "images/question.png";
+	} 
+	if (restaurante.foodTypes[0] == "Regional") {
+		return "images/regional.png";
+	} 
+	if (restaurante.foodTypes[0] == "Japonesa") {
+		return "images/sushi.png";
+	} 
+	if (restaurante.foodTypes[0] == "Chinesa") {
+		return "images/chinesa.png";
+	} 
+	if (restaurante.foodTypes[0] == "Italiana") {
+		return "images/pizza.png";
+	} 
+	if (restaurante.foodTypes[0] == "FastFood") {
+		return "images/hamburguer.png";
+	} 
+	if (restaurante.foodTypes[0] == "Lanche") {
+		return "images/hamburguer.png";
+	} 
+	if (restaurante.foodTypes[0] == "Outras") {
+		return "images/outros.png";
+	} 
+	return "images/question.png";
 }
 
 function procurarPorEnd() {
@@ -142,12 +163,9 @@ function procurarPorEnd() {
 
 	geocoder.geocode({'address' : end}, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
-			if (restaurantes) {
-				for (i in restaurantes) {
-					if (results[0].geometry.bounds.contains(restaurantes[i].getPosition())) {
-						restaurantes[i].setIcon("images/target.png");
-					}
-				}
+			geocodeResults = results;
+			if (results) {
+				map.setCenter(results[0].geometry.location);
 			}
 		} else {
 			alert("Erro: " + status);

@@ -2,7 +2,6 @@ package br.edu.ufcg.geoeating.action;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +31,12 @@ public class RestaurantAction extends ActionSupport{
 	private String latLong;
 	
 	private String tiposFood;
+	
+	private String novaFila;
+	
+	private String latitudeRest;
+	
+	private String longitudeRest;
 	
 	private HttpServletResponse response;
 	
@@ -102,6 +107,32 @@ public class RestaurantAction extends ActionSupport{
 				}finally{
 					dos.close();
 				}
+			} else {
+				dos.write("0".getBytes());
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	public void atualizarFila() {
+		DataOutputStream dos = null;
+		this.response = ServletActionContext.getResponse();
+
+		try {
+			try {
+				dos = new DataOutputStream(response.getOutputStream());
+				int qttWaiting = Integer.parseInt(novaFila);
+				
+				if (getRestaurantDAO().updateWaitRestaurantByLatLng(latitudeRest, longitudeRest, qttWaiting)) {
+					dos.write("1".getBytes());
+				} else {
+					dos.write("0".getBytes());
+				}
+			} catch (Exception e) {
+				dos.write("0".getBytes());
+			} finally {
+				dos.close();
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -162,6 +193,30 @@ public class RestaurantAction extends ActionSupport{
 
 	public void setTiposFood(String tiposFood) {
 		this.tiposFood = tiposFood;
+	}
+	
+	public String getNovaFila() {
+		return novaFila;
+	}
+
+	public void setNovaFila(String novaFila) {
+		this.novaFila = novaFila;
+	}
+
+	public String getLatitudeRest() {
+		return latitudeRest;
+	}
+
+	public void setLatitudeRest(String latitudeRest) {
+		this.latitudeRest = latitudeRest;
+	}
+
+	public String getLongitudeRest() {
+		return longitudeRest;
+	}
+
+	public void setLongitudeRest(String longitudeRest) {
+		this.longitudeRest = longitudeRest;
 	}
 
 	public HttpServletResponse getResponse() {

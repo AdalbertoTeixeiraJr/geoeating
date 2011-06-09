@@ -15,6 +15,8 @@
 	    
 	    <action name="cadastrar" class="restaurantAction" method="cadastrar" >
 	    </action>
+	    <action name="atualizarFila" class="restaurantAction" method="atualizarFila" >
+	    </action>
 	    
 	        <!-- Add actions here
 	        	Exs.:

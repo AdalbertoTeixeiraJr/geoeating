@@ -38,7 +38,7 @@ function downloadUrl(url, callback, postData,workspace,camada,geomColumn) {
        // Usually indicates request timed out in FF.
      }
      if (status == 200) {
-       callbackWFS(request.responseXML, request.status,workspace,camada,geomColumn);
+       callback(request.responseXML, request.status,workspace,camada,geomColumn);
        request.onreadystatechange = function() {};
      }
    }

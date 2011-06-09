@@ -15,6 +15,14 @@ function closeDialog() {
 	$('.window').hide();
 }
 
+function openWaitDialog() {
+	$('#wait').fadeIn(1000);
+}
+
+function closeWaitDialog() {
+	$('#wait').hide();
+}
+
 function openDialog(id,width,height) {
 	var maskHeight = $(document).height();
 	var maskWidth = $(window).width();

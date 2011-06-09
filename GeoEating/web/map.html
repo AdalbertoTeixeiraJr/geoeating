@@ -29,7 +29,7 @@ function updateMapLayers(){
 	limpaPlacemarks();
 	if(layers && layers.length>0){
 		for(i in layers){
-			pegaLayer(workspace,layers[i].layer,layers[i].geomColumn);
+			pegaLayer(workspace,layers[i].layer,layers[i].geomColumn,callbackWFS);
 		}
 	}
 }
@@ -69,6 +69,35 @@ function callbackWFS(responseXML, status,workspace,layer,geomColumn){
 	setStylesForMarkers();
 }
 
+function callbackConvexHull(responseXML,status,workspace,layer,geomColumn){
+	var wfsCollection = responseXML.firstChild;
+	var tipoComidaSelecionado = document.getElementById("selectComida").value;
+	if(wfsCollection.nodeName == "wfs:FeatureCollection"){
+		var wfsChilds = wfsCollection.childNodes;
+		for(var i=0; i < wfsChilds.length; i++){
+			var node = wfsChilds.item(i);
+			if(node.nodeName == "gml:featureMember"){
+				var camada = node.firstChild;
+				var geom = null;
+				var tipo = null;
+				if (camada.nodeName == workspace+":"+layer) {
+					for (var j=0; j < camada.childNodes.length; j++){
+						var child = camada.childNodes.item(j);
+						if(child.nodeName == workspace+":name") {
+							tipo = child.textContent;
+						} else if (child.nodeName == workspace+":"+geomColumn) {
+							geom = child;
+						}
+					}
+				}
+				if (tipo == tipoComidaSelecionado) {
+					parseConvexHull(tipo,geom);
+				}
+			}
+		}
+	}
+}
+
 function setStylesForMarkers() {
 	if (restaurantes) {
 		for (i in restaurantes) {
@@ -83,6 +112,34 @@ function setStylesForMarkers() {
 		    r.m.setIcon(getIconName(r));
 		}
 	}
+}
+
+function parseConvexHull(tipo,geomNode) {
+	var points = [];
+	if(geomNode.firstChild.firstChild.firstChild.firstChild){
+		var coords = geomNode.firstChild.firstChild.firstChild.firstChild;
+		if(coords.nodeName == "gml:coordinates"){
+			var pointsStr = coords.textContent.split(" ");
+			for (i in pointsStr) {
+				var pointStr = pointsStr[i].split(",");
+				lon = new Number(pointStr[0]);
+				lat = new Number(pointStr[1]);
+				points.push(new google.maps.LatLng(lat,lon));
+			}
+		}
+	}
+	
+	convexHull = new google.maps.Polygon({
+	      paths: points,
+	      strokeColor: "#FF0000",
+	      strokeOpacity: 0.8,
+	      strokeWeight: 2,
+	      fillColor: "#FF0000",
+	      fillOpacity: 0.35
+	    });
+	convexHull.setMap(map);
+	
+	closeDialog();
 }
 
 function parseRestaurant(node,workspace,geomColumn){
@@ -177,12 +234,12 @@ function getRestauranteByLocation(location) {
 	return null;
 }
 
-function pegaLayer(workspace,camada,geomColumn){
+function pegaLayer(workspace,camada,geomColumn,callback){
 	var bbox = getBbox();
 	var layer = workspace+":"+camada;
 	var url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+layer+"&styles=&bbox="+bbox;
 	url = url+"&srs=EPSG:4326";
-	downloadUrl(url,callbackWFS, null,workspace,camada,geomColumn);
+	downloadUrl(url,callback,null,workspace,camada,geomColumn);
 }
 
 function setCentro(ponto) {
@@ -251,6 +308,9 @@ function addLayerOnMap(checked,layer,geomColumn) {
 									<button type="submit" class="positive" onclick="novoRestaurante()">
 										<img src="images/add.png" alt="" /> Adicionar restaurante
 									</button>
+									<button name="submit" class="positive" onclick="updateMapLayers()">
+										<img src="images/refresh.png" alt="" /> Atualizar mapa
+									</button>
 									<button type="submit" class="positive" onclick="calculaRota()">
 										<img src="images/routing.png" alt="" /> Calcular rota
 									</button>
@@ -266,7 +326,6 @@ function addLayerOnMap(checked,layer,geomColumn) {
 									<hr/>
 									
 									<input type="checkbox" onchange="addLayer(this,'allrestaurants','geom')" id="checkRestaurantsLayer" />Restaurantes
-									<input type="button" onclick="updateMapLayers()" value="UpdateMap"/>
 								</div>
 							</td>
 						</tr>
@@ -290,7 +349,7 @@ function addLayerOnMap(checked,layer,geomColumn) {
 				<option>Outras</option>
 			</select>
 			<br/><br/>
-			<input type="button" onclick="" value="Ok"/></center>
+			<input type="button" onclick="verAreaDoTipoDeComida()" value="Ok"/></center>
 		</div>
 		
 		<div id="dialogCadastros" class="window"><a href="#" class="close">[ Cancelar ]</a>
@@ -328,6 +387,8 @@ function addLayerOnMap(checked,layer,geomColumn) {
 			<br/>
 			<center><input type="button" value="Salvar" onclick="cadastra()"/></center>
 			</div>
+			
+			<div id="wait"><p>Aguarde...</p></div>
 		</div>
 	<div id="mask"></div>
 </body>

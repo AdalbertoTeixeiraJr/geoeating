@@ -73,3 +73,9 @@ SELECT r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fk.name A
 FROM restaurant r, foodkind fk, restaurantfoodkind rfk
 WHERE r.id = rfk.id_restaurant AND fk.id = rfk.id_foodkind
 GROUP BY r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fkname
+
+CREATE OR REPLACE VIEW FoodKindConvexHull AS 
+SELECT fk.name, convexhull(multi(st_union(geom))) 
+FROM restaurant r, foodkind fk, restaurantfoodkind rfk
+WHERE rfk.id_restaurant = r.id AND rfk.id_foodkind = fk.id
+GROUP BY fk.name;

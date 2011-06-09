@@ -10,6 +10,7 @@ var destino;
 var geocoder;
 var inicializado;
 var geocodeResults;
+var convexHull;
 
 function initialize() {
 	if (document.getElementById("checkRestaurantsLayer")) {
@@ -94,6 +95,11 @@ function limpa() {
 	if (circulo) {
 		circulo.setMap(null);
 		circulo = null;
+	}
+	
+	if (convexHull) {
+		convexHull.setMap(null);
+		convexHull = null;
 	}
 	
 	if (geocodeResults) {
@@ -190,8 +196,10 @@ function calculaRota() {
 	op = 2;
 }
 
-function verAreaDoTipoDeComida(tipoSelecionado) {
+function verAreaDoTipoDeComida() {
+	limpa();
 	
+	pegaLayer(workspace,"foodkindconvexhull","convexhull",callbackConvexHull);
 }
 
 function calcRoute(fonte, destino) {

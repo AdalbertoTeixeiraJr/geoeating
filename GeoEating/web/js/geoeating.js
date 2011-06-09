@@ -49,7 +49,7 @@ function initialize() {
 			fonte = -1;
 			destino = -1;
 			lastClick = event.latLng;
-			abreCadastro();
+			openDialog("#dialogCadastros",520,280);
 		} else if (op == 2) {
 			tempDest = new google.maps.Marker({
 				position : event.latLng,
@@ -144,7 +144,7 @@ function getIconName(restaurante) {
 		return "images/hamburguer.png";
 	} 
 	if (restaurante.foodTypes[0] == "Lanche") {
-		return "images/hamburguer.png";
+		return "images/fritas.png";
 	} 
 	if (restaurante.foodTypes[0] == "Outras") {
 		return "images/outros.png";
@@ -188,6 +188,10 @@ function calculaRota() {
 	fonte = -1;
 	destino = -1;
 	op = 2;
+}
+
+function verAreaDoTipoDeComida(tipoSelecionado) {
+	
 }
 
 function calcRoute(fonte, destino) {

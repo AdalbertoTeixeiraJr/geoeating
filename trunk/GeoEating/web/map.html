@@ -6,6 +6,7 @@
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <title>GEO Eating</title>
 <link rel="stylesheet" type="text/css" href="css/buttons.css" />
+<link rel="stylesheet" type="text/css" href="css/windows.css" />
 <style type="text/css">
 html,body,#map_canvas {
 	width: 100%;
@@ -14,10 +15,9 @@ html,body,#map_canvas {
 	padding: 0;
 }
 </style>
-<script type="text/javascript"
-	src="http://maps.google.com/maps/api/js?sensor=false&language=pt-BR"></script>
-<script type="text/javascript"
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=pt-BR"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/windows.js"></script>
 <script type="text/javascript">
 var lastClick;
 var customMapType;
@@ -232,7 +232,8 @@ function addLayerOnMap(checked,layer,geomColumn) {
 </script>
 <script type="text/javascript" src="js/geoeating.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/geolocation.js" charset="utf-8"></script>
-<script type="text/javascript" src="js/util.js"></script>
+<script type="text/javascript" src="js/util.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/cadastro.js" charset="utf-8"></script>
 </head>
 <body onLoad="initialize()">
 	<table style="width: 100%; height: 100%" border="1">
@@ -259,6 +260,9 @@ function addLayerOnMap(checked,layer,geomColumn) {
 									<button type="submit" class="positive" onclick="procurarPorEnd()">
 										<img src="images/find.png" alt="" /> Procurar por endere&ccedil;o
 									</button>
+									<button name="modal" type="submit" onclick="openDialog('#dialogComidas',400,200)" class="positive">
+										<img src="images/area.png" alt="" /> Ver &aacute;rea de cobertura
+									</button>
 									<hr/>
 									
 									<input type="checkbox" onchange="addLayer(this,'allrestaurants','geom')" id="checkRestaurantsLayer" />Restaurantes
@@ -272,5 +276,59 @@ function addLayerOnMap(checked,layer,geomColumn) {
 			</td>
 		</tr>
 	</table>
+
+	<div id="boxes">
+		<div id="dialogComidas" class="window"><a href="#" class="close">[ Cancelar ]</a>
+			<p><b>Escolha o tipo de comida para achar a area de cobertura:</b></p>
+			<center><select id="selectComida">
+				<option>Regional</option>
+				<option>Japonesa</option>
+				<option>Italiana</option>
+				<option>Chinesa</option>
+				<option>FastFood</option>
+				<option>Lanche</option>
+				<option>Outras</option>
+			</select>
+			<br/><br/>
+			<input type="button" onclick="" value="Ok"/></center>
+		</div>
+		
+		<div id="dialogCadastros" class="window"><a href="#" class="close">[ Cancelar ]</a>
+			<p><b>Preencha os dados do restaurante:</b></p>
+			<table>
+				<tr>
+					<td><label>Nome Restaurante: </label></td>
+					<td><input type="text" id="nome" style="width: 100%"/></td>
+				</tr>
+				<tr>
+					<td><label>Descri&ccedil;&atilde;o: </label></td>
+					<td><input type="text" id="descri" style="width: 100%"/></td>
+				</tr>
+				<tr>
+					<td><label>Endere&ccedil;o Web: </label></td>
+					<td><input type="text" id="endereco" style="width: 100%"/></td>
+				</tr>
+				<tr>
+					<td><label>Telefone (DDD+n&uacute;mero): </label></td>
+					<td><input type="text" onkeyup="verificaCaratere('tel')" id="tel" style="width: 100%"/></td>
+				</tr>
+				<tr>
+					<td><label>Tipos de Comida: </label></td>
+					<td>
+						<input name="comidaRegional" id="comidaRegional" type="checkbox" value="1">Regional</input> 
+						<input name="comidaJaponesa" id="comidaJaponesa" type="checkbox" value="2">Japonesa</input>
+						<input name="comidaItaliana" id="comidaItaliana" type="checkbox" value="3">Italiana</input><br/>
+						<input name="comidaChin" id="comidaChin" type="checkbox" value="4">Chinesa</input>
+						<input name="comidaFastFood" id="comidaFastFood" type="checkbox" value="5">FastFood</input>
+						<input name="comidaLanche" id="comidaLanche" type="checkbox" value="6">Lanche</input><br/>
+						<input name="comidaOutras" id="comidaOutras" type="checkbox" value="7">Outras</input>
+					</td>
+				</tr>
+			</table>
+			<br/>
+			<center><input type="button" value="Salvar" onclick="cadastra()"/></center>
+			</div>
+		</div>
+	<div id="mask"></div>
 </body>
 </html>

@@ -84,7 +84,7 @@ public class RestaurantDAO {
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public String getCentroid(String multiPointsText) {
 		String geomUsuarios = "'MULTIPOINT(" + multiPointsText + ")'";
-		String query = "SELECT ST_AsText(ST_Centroid(ST_ConvexHull(" + geomUsuarios + "))) AS centro FROM restaurant r LIMIT 1";
+		String query = "SELECT AsText(Centroid(ConvexHull(" + geomUsuarios + "))) AS centro FROM restaurant r LIMIT 1";
 		List<String> results = getEm().createNativeQuery(query).getResultList();
 		return results.get(0);
 	}

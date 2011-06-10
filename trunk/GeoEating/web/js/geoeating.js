@@ -1,6 +1,7 @@
 var map;
 var directionDisplay;
 var directionsService;
+var amigos = [];
 var restaurantes = [];
 var tempDest;
 var circulo;
@@ -22,6 +23,9 @@ var tiposComida = ["Regional","Japonesa","Italiana","Chinesa","FastFood","Lanche
 function initialize() {
 	if (document.getElementById("checkRestaurantsLayer")) {
 		document.getElementById("checkRestaurantsLayer").checked="";
+	}
+	if (document.getElementById("checkAmigos")) {
+		document.getElementById("checkAmigos").checked="";
 	}
 	updateFiltros();
 	
@@ -88,6 +92,8 @@ function initialize() {
 			map.fitBounds(circulo.getBounds());
 			circulo.setMap(map);
 			op = 0;
+		} else if (op == 4) {
+			addAmigo(event.latLng);
 		}
 	});
 }
@@ -268,6 +274,13 @@ function verAreaDoTipoDeComida() {
 	limpa();
 	
 	pegaLayer(workspace,"foodkindconvexhull","convexhull",callbackConvexHull);
+}
+
+function adicionaAmigo() {
+	limpa();
+	op = 4;
+	document.getElementById("checkAmigos").checked = true;
+	filtraAmigos();
 }
 
 function calcRoute(fonte, destino) {
@@ -557,4 +570,41 @@ function addLayerOnMap(checked,layer,geomColumn) {
 		layers.push({"layer":layer, "geomColumn":geomColumn});
 	}
 	updateMapLayers();
+}
+
+function addAmigo(position) {
+	var markerAmigo = new google.maps.Marker({
+		position : position,
+		title : "Amigo",
+		icon : "images/hungry.png"
+	});
+	google.maps.event.addListener(markerAmigo, 'click', function(event) {
+		if (op != 2) {
+			markerAmigo.setMap(null);
+		    for(var i=0; i<amigos.length;i++) {
+				if(amigos[i]==markerAmigo) {
+				    amigos.splice(i,1);
+				}
+		    }
+		}
+	});
+	setMapMarkerAmigo(markerAmigo);
+	amigos.push(markerAmigo);
+}
+
+function filtraAmigos() {
+	if (amigos) {
+		for (i in amigos) {
+			setMapMarkerAmigo(amigos[i]);
+		}
+	}
+}
+
+function setMapMarkerAmigo(marker) {
+	var checkAmigos = document.getElementById("checkAmigos").checked;
+	if (checkAmigos) {
+		marker.setMap(map);
+	} else {
+		marker.setMap(null);
+	}
 }

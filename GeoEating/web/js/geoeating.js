@@ -106,16 +106,12 @@ function initialize() {
 
 function updateFiltros() {
 	var restauranteChecked = false;
-	if (document.getElementById("checkRestaurantsLayer")) {
-		restauranteChecked = document.getElementById("checkRestaurantsLayer").checked;
+	if (document.getElementById("checkRestaurantsLayer") || document.getElementById("checkTop20Layer")) {
+		restauranteChecked = document.getElementById("checkRestaurantsLayer").checked || document.getElementById("checkTop20Layer").checked;
 	}
 	var checkSemFila = document.getElementById("checkSemFila");
 	if (checkSemFila) {
 		checkSemFila.disabled=!restauranteChecked;
-	}
-	var checkTop20 = document.getElementById("checkTop20Layer");
-	if (checkTop20) {
-		checkTop20.disabled=!restauranteChecked;
 	}
 	for (j in tiposComida) {
 		var checkBox = document.getElementById("check" + tiposComida[j]);
@@ -328,7 +324,7 @@ function getCentroid(points) {
 				if(restauranteMaisProximoAmigos){
 					setCentro(restauranteMaisProximoAmigos.m.position);
 				}
-				/* var partes = texto.split(" ");
+				/*var partes = texto.split(" ");
 				 var longitude = parseFloat(partes[0]);
 				var latitude = parseFloat(partes[1]);
 				achaMaisProximoDoCentroide(latitude,longitude);*/
@@ -457,7 +453,7 @@ function setStylesForMarkers() {
 		    contentString += '<p><b>Tipos de Comida: </b> ' + r.foodTypes.toString() + '</p>';
 		    contentString += '<p><b>Quantidade em Espera: </b> ' + r.wait + '</p>';
 		    contentString += '<p><b>Telefone: </b> ' + r.tel + '</p>';
-		    contentString += '<p><b>Endere&ccedil;o WEB: </b> <a href="' + r.web + '">' + r.web + '</a></p>';
+		    contentString += '<p><b>Endere&ccedil;o WEB: </b> <a href="' + r.web + '">' + r.web + '</a></p><br><form></form>';
 		    r.info.setContent(contentString);
 		    r.m.setIcon(getIconName(r));
 		}

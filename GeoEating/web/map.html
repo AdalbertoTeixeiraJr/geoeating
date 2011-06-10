@@ -32,9 +32,9 @@ html,body,#map_canvas {
 			<td style="width: 30%; height: 100%" align="center">
 				<div id="map_control" style="width: 100%; height: 100%;">
 					<table style="width: 100%; height: 20%">
-						<tr align="center">
-							<td align="center">
-								<h1>GEO Eating</h1>
+						<thead><img src="images/logo.jpg"  width="45%" height="10%" halt="" /> </thead>
+						<tr align="left">
+							<td align="left">
 								<div class="buttons">
 									<button type="submit" class="positive" onclick="novoRestaurante()">
 										<img src="images/add.png" alt="" /> Adicionar restaurante
@@ -58,24 +58,33 @@ html,body,#map_canvas {
 										<img src="images/area.png" alt="" /> Ver &aacute;rea de cobertura
 									</button>
 									<button name="submit" class="positive" type="submit" onclick="putBufferTop20()">
-										<img src="images/prize.png" alt="" /> Ver &aacute;rea do TOP20 (mais movimentados)
+										<img src="images/prize.png" alt="" /> Ver &aacute;rea dos Mais Movimentados
 									</button>
 									<button type="submit" class="positive" onclick="restaurantesAmigos()">
 										<img src="images/friends.png" alt="" /> Restaurante com os amigos
 									</button>
 									<hr/>
-									<table border="0" align=center>
-										<tr><td><input type="checkbox" onchange="changeLayerAllRestaurant(this);updateFiltros();" id="checkRestaurantsLayer" />Restaurantes<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="updateMapLayers();" id="checkTop20Layer" />Top 20<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkSemFila" />Sem fila<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkRegional" />Regional<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkJaponesa" />Japonesa<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkItaliana" />Italiana<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkChinesa" />Chinesa<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkFastFood" />FastFood<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkLanche" />Lanche<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkOutras" />Outras<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" />Amigos<br/></td></tr>
+									<table border="1" align=left style="HEIGHT:100%;WIDTH:100%;">
+										<thead><img src="images/camadas.jpg" alt="" /></thead>
+										<tr><td><input type="checkbox" onchange="changeLayerAllRestaurant(this);updateFiltros();" id="checkRestaurantsLayer" /><img src="images/food.png"  width="20" height="20" alt="" />Restaurantes<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="updateMapLayers();updateFiltros();" id="checkTop20Layer" /><img src="images/prize.png" width="20" height="20" alt="" />Mais Movimentados<br/></td></tr>
+										<!-- <tr><td><input type="checkbox" onchange="addRasterLayer(this,'','topStyle','multi'); updateMapLayers();" id="checkTop20AreaLayer" /><img src="images/area.png"  width="20" height="20" alt="" />Area Mais Movimentados<br/></td></tr> -->
+									</table>
+									<br>
+									<table border="1" align=center  style="HEIGHT:100%;WIDTH:100%;" >
+										<thead><img src="images/filtros.jpg" alt="" /></thead>
+										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" /><img src="images/hungry.png"  width="20" height="20" alt="" />Amigos</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkSemFila" /><img src="images/question.png"  width="20" height="20" alt="" />	 Sem fila</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkJaponesa" /><img src="images/sushi.png"  width="20" height="20" alt="" />  Japonesa<br/></td></tr>
+										
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkRegional" /><img src="images/regional.png"  width="20" height="20" alt="" />  Regional</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkChinesa" /><img src="images/chinesa.png"  width="20" height="20" alt="" />   Chinesa</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkLanche" /><img src="images/fritas.png"  width="20" height="20" alt="" />    Lanche<br/></td></tr>
+										
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkItaliana" /><img src="images/pizza.png"  width="20" height="20" alt="" />  Italiana</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkFastFood" /><img src="images/hamburguer.png"  width="20" height="20" alt="" />  FastFood</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkOutras" /><img src="images/outros.png"  width="20" height="20" alt="" />    Outras<br/></td></tr>
+										
 									</table>
 								</div>
 							</td>

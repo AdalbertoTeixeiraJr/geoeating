@@ -17,6 +17,8 @@
 	    </action>
 	    <action name="atualizarFila" class="restaurantAction" method="atualizarFila" >
 	    </action>
+	    <action name="getCentroide" class="restaurantAction" method="getCentroide" >
+	    </action>
 	    
 	        <!-- Add actions here
 	        	Exs.:

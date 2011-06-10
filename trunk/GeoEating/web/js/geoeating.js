@@ -12,6 +12,7 @@ var geocoder;
 var inicializado;
 var geocodeResults;
 var convexHull;
+var restauranteMaisProximoAmigos;
 
 var lastClick;
 var customMapType;
@@ -154,6 +155,10 @@ function limpa() {
 	if (tempDest) {
 		tempDest.setMap(null);
 	}
+	
+	if (restauranteMaisProximoAmigos) {
+		restauranteMaisProximoAmigos = null;
+	}
 
 	if (circulo) {
 		circulo.setMap(null);
@@ -185,6 +190,9 @@ function getIconName(restaurante) {
 			}
 		}
 	} 
+	if (restauranteMaisProximoAmigos && restauranteMaisProximoAmigos.id == restaurante.id) {
+		return "images/target.png";
+	}
 	if (circulo) {
 		// consulta 1
 		if (distancia(restaurante.m.getPosition().lat(), restaurante.m.getPosition().lng(), circulo.getCenter().lat(), circulo.getCenter().lng()) <= (circulo.getRadius()/1000)) {
@@ -281,6 +289,10 @@ function adicionaAmigo() {
 	op = 4;
 	document.getElementById("checkAmigos").checked = true;
 	filtraAmigos();
+}
+
+function restaurantesAmigos() {
+	getCentroid(formatarPosicaoDosAmigos());
 }
 
 function calcRoute(fonte, destino) {
@@ -501,6 +513,7 @@ function parseRestaurant(node,workspace,geomColumn){
 	});
 	
 	restaurante = {
+			id : id,
 			name : nome,
 			description : descricao,
 			wait : parseInt(filaDeEspera),
@@ -606,5 +619,40 @@ function setMapMarkerAmigo(marker) {
 		marker.setMap(map);
 	} else {
 		marker.setMap(null);
+	}
+}
+
+function formatarPosicaoDosAmigos() {
+	var result = "";
+	var sep = "";
+	if (amigos) {
+		for (i in amigos) {
+			result += sep + amigos[i].position.lng() + " " + amigos[i].position.lat();
+			sep = ", ";
+		}
+	}
+	return result;
+}
+
+function achaMaisProximoDoCentroide(latitude,longitude) {
+	var mindist = Infinity;
+	var maisproximo = null;
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var r = restaurantes[i];
+			if (r.m.getMap() == map) { // visivel
+				var dist = distancia(r.m.position.lat(), r.m.position.lng(), latitude, longitude);
+				if (dist<mindist) {
+					mindist=dist;
+					maisproximo=r;
+				}
+			}
+		}
+	}
+	restauranteMaisProximoAmigos = maisproximo;
+	if (restauranteMaisProximoAmigos) {
+		setCentro(restauranteMaisProximoAmigos.m.position);
+	} else {
+		alert("Nenhum restaurante encontrado!");
 	}
 }

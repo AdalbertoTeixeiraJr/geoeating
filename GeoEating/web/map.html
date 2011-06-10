@@ -26,8 +26,8 @@ html,body,#map_canvas {
 <body onLoad="initialize()">
 	<table style="width: 100%; height: 100%" border="1">
 		<tr>
-			<td colspan="2" style="width: 100%; height: 10%" id="status" class="status">
-			</td>
+			<!-- <td colspan="2" style="width: 100%; height: 10%" id="status" class="status">
+			</td> -->
 		</tr>
 		<tr>
 			<td id="map_column" style="width: 70%; height: 100%">
@@ -40,32 +40,32 @@ html,body,#map_canvas {
 						<tr align="left">
 							<td align="left">
 								<div class="buttons">
-									<button type="submit" class="positive" onclick="novoRestaurante()">
-										<img src="images/add.png" alt="" /> Adicionar restaurante
+									<button type="submit" class="positive" onclick="limpaFerramentas();novoRestaurante();">
+										<img src="" id="novoRestauranteToll" alt="" /><img src="images/add.png" alt="" /> Adicionar restaurante
 									</button>
-									<button type="submit" class="positive" onclick="adicionaAmigo()">
-										<img src="images/hungry.png" alt="" /> Posicionar amigo
+									<button type="submit" class="positive" onclick="limpaFerramentas();adicionaAmigo();">
+										<img src="" id="adicionaAmigoToll" alt="" /><img src="images/hungry.png" alt="" /> Posicionar amigo
 									</button>
-									<button name="submit" class="positive" onclick="limpaFerramentas();updateMapLayers()">
+									<button name="submit" class="positive" onclick="limpaFerramentas();updateMapLayers();">
 										<img src="images/refresh.png" alt="" /> Limpar
 									</button>
-									<button type="submit" class="positive" onclick="calculaRota()">
-										<img src="images/routing.png" alt="" /> Calcular rota
+									<button type="submit" class="positive" onclick="limpaFerramentas();calculaRota();">
+										<img src="" id="calculaRotaToll" alt="" /><img src="images/routing.png" alt="" /> Calcular rota
 									</button>
-									<button type="submit" class="positive" onclick="restaurantesProximos()">
-										<img src="images/around.png" alt="" /> Encontrar restaurantes pr&oacute;ximos
+									<button type="submit" class="positive" onclick="limpaFerramentas();restaurantesProximos();">
+										<img src="" id="restaurantesProximosToll" alt="" /><img src="images/around.png" alt="" /> Encontrar restaurantes pr&oacute;ximos
 									</button>
-									<button type="submit" class="positive" onclick="procurarPorEnd()">
+									<button type="submit" class="positive" onclick="limpaFerramentas();procurarPorEnd()">
 										<img src="images/find.png" alt="" /> Procurar por endere&ccedil;o
 									</button>
-									<button name="modal" type="submit" onclick="openDialog('#dialogComidas',400,200)" class="positive">
+									<button name="modal" type="submit" onclick="limpaFerramentas();openDialog('#dialogComidas',400,200)" class="positive">
 										<img src="images/area.png" alt="" /> Ver &aacute;rea de cobertura
 									</button>
-									<button name="submit" class="positive" type="submit" onclick="areaTop20();putBufferTop20()">
-										<img src="images/prize.png" alt="" /> Ver &aacute;rea dos Mais Movimentados
+									<button name="submit" class="positive" type="submit" onclick="limpaFerramentas();areaTop20();putBufferTop20()">
+										<img src="" id="areaTop20Toll" alt="" /><img src="images/prize.png" alt="" /> Ver &aacute;rea dos Mais Movimentados
 									</button>
-									<button type="submit" class="positive" onclick="restaurantesAmigos()">
-										<img src="images/friends.png" alt="" /> Restaurante com os amigos
+									<button type="submit" class="positive" onclick="limpaFerramentas();restaurantesAmigos();">
+										<img src="" id="restaurantesAmigosToll" alt="" /><img src="images/friends.png" alt="" /> Restaurante com os amigos
 									</button>
 								</div>
 								<hr/>

@@ -105,7 +105,7 @@ function initialize() {
 	google.maps.event.addListener(map, 'click', function(event) {
 		limpa();
 		if (op == 1) {
-			op = 0;
+			//op = 0;
 			fonte = -1;
 			destino = -1;
 			lastClick = event.latLng;
@@ -139,8 +139,9 @@ function initialize() {
 			});
 			map.fitBounds(circulo.getBounds());
 			circulo.setMap(map);
-			op = 0;
+			//op = 0;
 		} else if (op == 4) {
+			
 			addAmigo(event.latLng);
 		}
 	});
@@ -187,7 +188,7 @@ function filtra() {
 						}
 					}
 				}
-				show = possuiAlgumaComidaSelecionada || restauranteMaisProximoAmigos.id == r.id;
+				show = possuiAlgumaComidaSelecionada || (restauranteMaisProximoAmigos!=null && restauranteMaisProximoAmigos.id == r.id);
 			}
 		
 			if (show) {
@@ -202,16 +203,17 @@ function filtra() {
 }
 
 function setStatus(status) {
-	if (status == null || status == '') {
+	/*if (status == null || status == '') {
 		document.getElementById("status").innerHTML = '';
 	} else {
 		document.getElementById("status").innerHTML = '<p><b><font size="2">&nbsp;&nbsp;&nbsp;' + status + '</font></b></p>';
-	}
+	}*/
 }
 
 function limpaFerramentas(){
 	limpa();
 	op = -1;
+	updateTool("");
 }
 
 function limpa() {
@@ -245,9 +247,7 @@ function limpa() {
 	}
 
 	if (restaurantes) {
-		for (i in restaurantes) {
-			restaurantes[i].m.setIcon(getIconName(restaurantes[i]));
-		}
+		limpaPlacemarks();
 	}
 }
 
@@ -346,6 +346,7 @@ function possuiComida(restaurante,tipo) {
 
 function restaurantesProximos() {
 	limpa();
+	updateTool("restaurantesProximosToll");
 	op = 3;
 	
 	setStatus("Marque o local para procurar");
@@ -353,10 +354,12 @@ function restaurantesProximos() {
 
 function areaTop20() {
 	limpa();
+	updateTool("areaTop20Toll");
 	op = 20;
 }
 
 function novoRestaurante() {
+	updateTool("novoRestauranteToll");
 	limpa();
 	op = 1;
 	
@@ -364,12 +367,25 @@ function novoRestaurante() {
 }
 
 function calculaRota() {
+	updateTool("calculaRotaToll");
 	limpa();
 	fonte = -1;
 	destino = -1;
 	op = 2;
 	
 	setStatus("Marque a origem");
+}
+
+function updateTool(tool){
+	document.getElementById("calculaRotaToll").src = "";
+	document.getElementById("novoRestauranteToll").src = "";
+	document.getElementById("areaTop20Toll").src = "";
+	document.getElementById("restaurantesProximosToll").src = "";
+	document.getElementById("adicionaAmigoToll").src = "";
+	document.getElementById("restaurantesAmigosToll").src = "";
+	if(tool.length>0){
+		document.getElementById(tool).src = "images/target.png";
+	}
 }
 
 function verAreaDoTipoDeComida() {
@@ -380,6 +396,7 @@ function verAreaDoTipoDeComida() {
 
 function adicionaAmigo() {
 	limpa();
+	updateTool("adicionaAmigoToll");
 	op = 4;
 	document.getElementById("checkAmigos").checked = true;
 	filtraAmigos();
@@ -437,7 +454,7 @@ function calcRoute(fonte, destino) {
 			directionsDisplay.setDirections(response);
 		}
 	});
-	op = 0;
+	//op = 0;
 	apagaTemp();
 	setStatus('');
 }
@@ -464,9 +481,10 @@ function limpaPlacemarks(){
 	if (restaurantes) {
 		var tops = [];
 		for(j in restaurantes){
-			if((idsTop.indexOf(restaurantes[j].id)<0 || !document.getElementById("checkTop20Layer").checked ) && !(restauranteMaisProximoAmigos && restauranteMaisProximoAmigos.id == restaurantes[j].id)){
+			if(!showAll && (idsTop.indexOf(restaurantes[j].id)<0 || !document.getElementById("checkTop20Layer").checked ) && !(restauranteMaisProximoAmigos && restauranteMaisProximoAmigos.id == restaurantes[j].id)){
 				restaurantes[j].m.setMap(null);
 			}else{
+				restaurantes[j].m.setIcon(getIconName(restaurantes[j]));
 				tops.push(restaurantes[j]);
 			}
 		}
@@ -837,14 +855,14 @@ function putBufferTop20(){
 		//alert("Selecione a camada do top 20!");
 		return;
 	}else if(op == 20){
-		var valor = prompt("Digite a distancia (em metros) entre os restaurantes a considerar:", "");
-		lastTop20Buffer = valor;
+		var valor = prompt("Digite a distancia (em km) entre os restaurantes a considerar:", "");
 		if (valor == null || !isFinite(valor)) {
 			alert("Valor invalido!");
 			return;
 		}
-		
-		limpa();
+		valor = valor*1000;
+		lastTop20Buffer = valor;
+		limpaBufferTop20();
 
 		if (restaurantes) {
 			for (i in restaurantes) {
@@ -873,13 +891,13 @@ function putBufferTop20WithRadius(raio){
 	if (document.getElementById("checkTop20Layer").disabled || !document.getElementById("checkTop20Layer").checked) {
 		//alert("Selecione a camada do top 20!");
 		return;
-	} else if(op == 20) {
+	}else if(op == 20){
 		var valor = raio;
 		if (valor == null || !isFinite(valor)) {
 			return;
 		}
 		
-		limpa();
+		limpaBufferTop20();
 
 		if (restaurantes) {
 			for (i in restaurantes) {
@@ -940,6 +958,15 @@ function addAmigo(position) {
 				    amigos.splice(i,1);
 				}
 		    }
+		}else if (op == 2) {
+			limpa();
+			tempDest = new google.maps.Marker({
+				position : event.latLng,
+				map : map,
+				title : "Origem"
+			});
+			fonte = event.latLng;
+			setStatus("Marque o restaurante");
 		}
 	});
 	setMapMarkerAmigo(markerAmigo);

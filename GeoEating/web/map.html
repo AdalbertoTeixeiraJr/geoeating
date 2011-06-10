@@ -39,6 +39,9 @@ html,body,#map_canvas {
 									<button type="submit" class="positive" onclick="novoRestaurante()">
 										<img src="images/add.png" alt="" /> Adicionar restaurante
 									</button>
+									<button type="submit" class="positive" onclick="adicionaAmigo()">
+										<img src="images/hungry.png" alt="" /> Posicionar amigo
+									</button>
 									<button name="submit" class="positive" onclick="updateMapLayers()">
 										<img src="images/refresh.png" alt="" /> Atualizar mapa
 									</button>
@@ -71,6 +74,7 @@ html,body,#map_canvas {
 										<tr><td><input type="checkbox" onchange="filtra()" id="checkFastFood" />  FastFood<br/></td></tr>
 										<tr><td><input type="checkbox" onchange="filtra()" id="checkLanche" />    Lanche<br/></td></tr>
 										<tr><td><input type="checkbox" onchange="filtra()" id="checkOutras" />    Outras<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" />Amigos<br/></td></tr>
 									</table>
 								</div>
 							</td>

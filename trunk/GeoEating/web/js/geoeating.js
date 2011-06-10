@@ -14,6 +14,7 @@ var inicializado;
 var geocodeResults;
 var convexHull;
 var restauranteMaisProximoAmigos;
+var lastTop20Buffer;
 
 var lastClick;
 var customMapType;
@@ -22,6 +23,46 @@ var layers = [];
 var rasterLayers = [];
 var workspace = "geoeating";
 var tiposComida = ["Regional","Japonesa","Italiana","Chinesa","FastFood","Lanche","Outras"];
+
+var secOrig = 1.5;
+var secAux = 1.5;
+var secs
+var timerID = null
+var timerRunning = false
+var delay = 1000
+
+function InitializeTimer(secAux2)
+{
+    // Set the length of the timer, in seconds
+    secs = secAux2;
+    StopTheClock();
+    StartTheTimer();
+}
+
+function StopTheClock()
+{
+    if(timerRunning)
+        clearTimeout(timerID);
+    timerRunning = false;
+}
+
+function StartTheTimer()
+{
+    if (secs==0)
+    {
+        StopTheClock();
+        // Here's where you put something useful that's
+        // supposed to happen after the allotted time.
+        // For example, you could display a message:
+        //alert("You have just wasted 10 seconds of your life.");
+    }
+    else
+    {
+        self.status = secs;
+        timerRunning = true;
+        timerID = self.setTimeout("updateMapLayers()", secs);
+    }
+}
 
 
 function initialize() {
@@ -58,7 +99,7 @@ function initialize() {
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	google.maps.event.addListener(map, 'bounds_changed', function(event) {
 		if(inicializado){
-			updateMapLayers();
+			InitializeTimer(secAux);
 		}
 	});
 	google.maps.event.addListener(map, 'click', function(event) {
@@ -76,7 +117,6 @@ function initialize() {
 				title : "Origem"
 			});
 			fonte = event.latLng;
-			setStatus('Clique no restaurante alvo.');
 		} else if (op == 3) {
 			var dist = prompt("Digite a distancia tolerada (em km)", "");
 			if (dist == null) {
@@ -110,6 +150,10 @@ function updateFiltros() {
 	if (document.getElementById("checkRestaurantsLayer") || document.getElementById("checkTop20Layer")) {
 		restauranteChecked = document.getElementById("checkRestaurantsLayer").checked || document.getElementById("checkTop20Layer").checked;
 	}
+	if(!document.getElementById("checkTop20Layer").checked){
+		limpaBufferTop20();
+		if(op==20){op=-1;}
+	}
 	var checkSemFila = document.getElementById("checkSemFila");
 	if (checkSemFila) {
 		checkSemFila.disabled=!restauranteChecked;
@@ -142,7 +186,7 @@ function filtra() {
 						}
 					}
 				}
-				show = possuiAlgumaComidaSelecionada;
+				show = possuiAlgumaComidaSelecionada || restauranteMaisProximoAmigos.id == r.id;
 			}
 		
 			if (show) {
@@ -151,7 +195,13 @@ function filtra() {
 				r.m.setMap(null);
 			}
 		}
+		putBufferTop20WithRadius(lastTop20Buffer);
 	}
+}
+
+function limpaFerramentas(){
+	limpa();
+	op = -1;
 }
 
 function limpa() {
@@ -170,17 +220,12 @@ function limpa() {
 		circulo.setMap(null);
 		circulo = null;
 	}
+
+	limpaBufferTop20();
 	
 	if (convexHull) {
 		convexHull.setMap(null);
 		convexHull = null;
-	}
-	
-	if (buffers) {
-		for (i in buffers) {
-			buffers[i].setMap(null);
-		}
-		buffers = [];
 	}
 	
 	if (geocodeResults) {
@@ -192,8 +237,15 @@ function limpa() {
 			restaurantes[i].m.setIcon(getIconName(restaurantes[i]));
 		}
 	}
-	
-	setStatus('');
+}
+
+function limpaBufferTop20(){
+	if (buffers) {
+		for (i in buffers) {
+			buffers[i].setMap(null);
+		}
+		buffers = [];
+	}
 }
 
 function getIconName(restaurante) {
@@ -280,26 +332,19 @@ function possuiComida(restaurante,tipo) {
 	return false;
 }
 
-function setStatus(texto) {
-	if (texto == null || texto == ''){
-		document.getElementById("status").innerHTML='';
-	} else {
-		document.getElementById("status").innerHTML='<p><b><font size="2">&nbsp;&nbsp;'+texto+'</font></b></p>';
-	}
-}
-
 function restaurantesProximos() {
 	limpa();
 	op = 3;
-	
-	setStatus("Clique no ponto para procurar os restaurantes proximos.");
+}
+
+function areaTop20() {
+	limpa();
+	op = 20;
 }
 
 function novoRestaurante() {
 	limpa();
 	op = 1;
-
-	setStatus("Clique onde quer adicionar um novo restaurante.");
 }
 
 function calculaRota() {
@@ -307,8 +352,6 @@ function calculaRota() {
 	fonte = -1;
 	destino = -1;
 	op = 2;
-	
-	setStatus('Clique em um ponto do mapa.');
 }
 
 function verAreaDoTipoDeComida() {
@@ -322,8 +365,6 @@ function adicionaAmigo() {
 	op = 4;
 	document.getElementById("checkAmigos").checked = true;
 	filtraAmigos();
-
-	setStatus("Clique onde quer adicionar seus amigos.");
 }
 
 function getCentroid(points) {
@@ -339,10 +380,8 @@ function getCentroid(points) {
 			if (ajax.responseText == "0") {
 				alert('Ocorreu um erro ao processar a requisição!');
 			} else {
-				restauranteMaisProximoAmigos=getRestauranteById(ajax.responseText);
-				if(restauranteMaisProximoAmigos){
-					setCentro(restauranteMaisProximoAmigos.m.position);
-				}
+				restauranteMaisProximoAmigos =  getRestauranteByIdRequest(ajax.responseText);
+				
 				/*var partes = texto.split(" ");
 				 var longitude = parseFloat(partes[0]);
 				var latitude = parseFloat(partes[1]);
@@ -354,13 +393,6 @@ function getCentroid(points) {
 }
 
 function restaurantesAmigos() {
-	limpa();
-	
-	if (amigos.length == 0) {
-		alert("Marque seus amigos primeiro!");
-		return;
-	}
-	
 	getCentroid(formatarPosicaoDosAmigos());
 }
 
@@ -388,6 +420,7 @@ function apagaTemp() {
 
 //que tavam no html
 function updateMapLayers(){
+	secAux = secOrig;
 	limpaPlacemarks();
 	if(document.getElementById("checkTop20Layer").checked){
 		pegaLayer(workspace,'top20arearestaurant','geom',callbackTopArea);
@@ -403,10 +436,9 @@ function limpaPlacemarks(){
 	if (restaurantes) {
 		var tops = [];
 		for(j in restaurantes){
-			if((idsTop.indexOf(restaurantes[j].id)<0 || !document.getElementById("checkTop20Layer").checked )){
+			if((idsTop.indexOf(restaurantes[j].id)<0 || !document.getElementById("checkTop20Layer").checked ) && !(restauranteMaisProximoAmigos && restauranteMaisProximoAmigos.id == restaurantes[j].id)){
 				restaurantes[j].m.setMap(null);
 			}else{
-				//alert((idsTop.indexOf(restaurantes[j].id)>=0 +" | "+ document.getElementById("checkTop20Layer").checked ));
 				tops.push(restaurantes[j]);
 			}
 		}
@@ -432,12 +464,33 @@ function callbackWFS(responseXML, status,workspace,layer,geomColumn){
 			if(node.nodeName == "gml:featureMember"){
 				var camada = node.firstChild;
 				if(camada.nodeName == workspace+":"+layer){
-					parseRestaurant(camada,workspace,geomColumn);
+					parseRestaurant(camada,workspace,geomColumn,false);
 				}
 			}
 		}
 	}
 	setStylesForMarkers();
+	filtra();
+}
+
+function callbackWFSMaisProximo(responseXML, status,workspace,layer,geomColumn,id){
+	var wfsCollection = responseXML.firstChild;
+	if(wfsCollection.nodeName == "wfs:FeatureCollection"){
+		var wfsChilds = wfsCollection.childNodes;
+		for(var i=0;i<wfsChilds.length;i++){
+			var node = wfsChilds.item(i);
+			if(node.nodeName == "gml:featureMember"){
+				var camada = node.firstChild;
+				if(camada.nodeName == workspace+":"+layer){
+					restauranteMaisProximoAmigos = parseRestaurant(camada,workspace,geomColumn,true);
+				}
+			}
+		}
+	}
+	setStylesForMarkers();
+	if(restauranteMaisProximoAmigos){
+		setCentro(restauranteMaisProximoAmigos.m.position);
+	}
 	filtra();
 }
 
@@ -514,7 +567,7 @@ function parseConvexHull(tipo,geomNode) {
 	closeDialog();
 }
 
-function parseRestaurant(node,workspace,geomColumn){
+function parseRestaurant(node,workspace,geomColumn,idMaisProximo){
 	var childNodes = node.childNodes;
 	var lat;
 	var lon;
@@ -558,15 +611,14 @@ function parseRestaurant(node,workspace,geomColumn){
 	var restaurante = getRestauranteById(id);
 	if (restaurante != null) { // restaurante ja foi criado, apenas adiciona o tipo de comida
 		addFoodType(restaurante,tipo_comida);
-		return;
-	}
-	if(!(idsTop.indexOf(id)>=0 && document.getElementById("checkTop20Layer").checked )){
-		if(showAll){
-			addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location)
-		}
-	}else if((idsTop.indexOf(id)>=0 && document.getElementById("checkTop20Layer").checked )){
-		if(!restaurante){
-			addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location)
+		return restaurante;
+	}else{
+		if(!(idsTop.indexOf(id)>=0 && document.getElementById("checkTop20Layer").checked ) && !(restauranteMaisProximoAmigos && restauranteMaisProximoAmigos.id == id) && !idMaisProximo){
+			if(showAll){
+				return addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location)
+			}
+		}else if((idsTop.indexOf(id)>=0 && document.getElementById("checkTop20Layer").checked ) || (restauranteMaisProximoAmigos && restauranteMaisProximoAmigos.id == id) || idMaisProximo){
+			return addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location)
 		}
 	}
 }
@@ -588,9 +640,9 @@ function addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_com
 			if (fonte != -1) {
 				// consulta 2
 				calcRoute(fonte, destino);
-				setStatus('');
 			}
 		} else {
+			secAux = 4;
 		    infowindow.open(map, marker);
 		}
 	});
@@ -615,6 +667,7 @@ function addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_com
 	};
 	addFoodType(restaurante,tipo_comida);
 	restaurantes.push(restaurante);
+	return restaurante;
 }
 
 function getRestauranteByLocation(location) {
@@ -638,6 +691,25 @@ function getRestauranteById(id) {
 		    }
 		}
 	}
+	return null;
+}
+
+function getRestauranteByIdRequest(id) {
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var r = restaurantes[i];
+		    if (r.id == id) {
+		    	if(r){
+		    		restauranteMaisProximoAmigos = r;
+					setCentro(r.m.position);
+				}
+		    	return r;
+		    }
+		}
+	}
+	
+	var url = "http://localhost:8080/geoserver/wfs?request=GetFeature&typeName=geoeating:allrestaurants&CQL_FILTER=id%20=%20"+id+"%20&version=1.0.0 ";
+	downloadUrl(url,callbackWFSMaisProximo,null,'geoeating','allrestaurants','geom');
 	return null;
 }
 
@@ -734,34 +806,72 @@ function changeLayerAllRestaurant(input){
 
 function putBufferTop20(){
 	if (document.getElementById("checkTop20Layer").disabled || !document.getElementById("checkTop20Layer").checked) {
-		alert("Selecione a camada dos mais movimentados!");
+		//alert("Selecione a camada do top 20!");
 		return;
-	}
-	var valor = prompt("Digite a distancia (em metros) entre os restaurantes a considerar:", "");
-	if (valor == null || !isFinite(valor)) {
-		alert("Valor invalido!");
-		return;
-	}
-	
-	limpa();
+	}else if(op == 20){
+		var valor = prompt("Digite a distancia (em metros) entre os restaurantes a considerar:", "");
+		lastTop20Buffer = valor;
+		if (valor == null || !isFinite(valor)) {
+			alert("Valor invalido!");
+			return;
+		}
+		
+		limpa();
 
-	if (restaurantes) {
-		for (i in restaurantes) {
-			var restaurante = restaurantes[i];
-			if (idsTop.indexOf(restaurante.id)>=0) {
-				var buffer = new google.maps.Circle({
-					center : restaurante.m.position,
-					radius : parseFloat(valor),
-					clickable : false,
-					strokeColor : "#FF0000",
-					strokeOpacity : 0.2,
-					strokeWeight : 0.5,
-					fillColor : "#FF0000",
-					fillOpacity : 0.2
-				});
-				
-				buffer.setMap(map);
-				buffers.push(buffer);
+		if (restaurantes) {
+			for (i in restaurantes) {
+				var restaurante = restaurantes[i];
+				if (idsTop.indexOf(restaurante.id)>=0) {
+					var buffer = new google.maps.Circle({
+						center : restaurante.m.position,
+						radius : parseFloat(valor),
+						clickable : false,
+						strokeColor : "#FF0000",
+						strokeOpacity : 0.2,
+						strokeWeight : 0.5,
+						fillColor : "#FF0000",
+						fillOpacity : 0.2
+					});
+					
+					buffer.setMap(map);
+					buffers.push(buffer);
+				}
+			}
+		}
+	}
+}
+
+function putBufferTop20WithRadius(raio){
+	if (document.getElementById("checkTop20Layer").disabled || !document.getElementById("checkTop20Layer").checked) {
+		//alert("Selecione a camada do top 20!");
+		return;
+	}else if(op == 20){
+		var valor = raio;
+		if (valor == null || !isFinite(valor)) {
+			alert("Valor invalido!");
+			return;
+		}
+		
+		limpa();
+
+		if (restaurantes) {
+			for (i in restaurantes) {
+				var restaurante = restaurantes[i];
+				if (idsTop.indexOf(restaurante.id)>=0) {
+					var buffer = new google.maps.Circle({
+						center : restaurante.m.position,
+						radius : parseFloat(valor),
+						clickable : false,
+						strokeColor : "#FF0000",
+						strokeOpacity : 0.2,
+						strokeWeight : 0.5,
+						fillColor : "#FF0000",
+						fillOpacity : 0.2
+					});
+					
+					buffer.setMap(map);
+					buffers.push(buffer);
+				}
 			}
 		}
 	}

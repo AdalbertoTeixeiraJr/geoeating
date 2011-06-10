@@ -26,17 +26,13 @@ html,body,#map_canvas {
 <body onLoad="initialize()">
 	<table style="width: 100%; height: 100%" border="1">
 		<tr>
-			<td colspan="2" style="width: 100%; height: 10%" id="status" class="status">
-			</td>
-		</tr>
-		<tr>
-			<td id="map_column" style="width: 70%; height: 90%">
+			<td id="map_column" style="width: 70%; height: 100%">
 				<div id="map_canvas" style="width: 100%; height: 100%"></div>
 			</td>
-			<td style="width: 30%; height: 90%" align="center">
+			<td style="width: 30%; height: 100%" align="center">
 				<div id="map_control" style="width: 100%; height: 100%;">
 					<table style="width: 100%; height: 20%">
-						<thead><img src="images/logo.jpg" width="45%" height="10%" halt="" /> </thead>
+						<thead><img src="images/logo.jpg"  width="45%" height="10%" halt="" /> </thead>
 						<tr align="left">
 							<td align="left">
 								<div class="buttons">
@@ -46,8 +42,8 @@ html,body,#map_canvas {
 									<button type="submit" class="positive" onclick="adicionaAmigo()">
 										<img src="images/hungry.png" alt="" /> Posicionar amigo
 									</button>
-									<button name="submit" class="positive" onclick="updateMapLayers()">
-										<img src="images/refresh.png" alt="" /> Atualizar mapa
+									<button name="submit" class="positive" onclick="limpaFerramentas();updateMapLayers()">
+										<img src="images/refresh.png" alt="" /> Limpar
 									</button>
 									<button type="submit" class="positive" onclick="calculaRota()">
 										<img src="images/routing.png" alt="" /> Calcular rota
@@ -61,46 +57,39 @@ html,body,#map_canvas {
 									<button name="modal" type="submit" onclick="openDialog('#dialogComidas',400,200)" class="positive">
 										<img src="images/area.png" alt="" /> Ver &aacute;rea de cobertura
 									</button>
-									<button name="submit" class="positive" type="submit" onclick="putBufferTop20()">
+									<button name="submit" class="positive" type="submit" onclick="areaTop20();putBufferTop20()">
 										<img src="images/prize.png" alt="" /> Ver &aacute;rea dos Mais Movimentados
 									</button>
 									<button type="submit" class="positive" onclick="restaurantesAmigos()">
 										<img src="images/friends.png" alt="" /> Restaurante com os amigos
 									</button>
 									<hr/>
+									<table border="1" align=left style="HEIGHT:100%;WIDTH:100%;">
+										<thead><img src="images/camadas.jpg" alt="" /></thead>
+										<tr><td><input type="checkbox" onchange="changeLayerAllRestaurant(this);updateFiltros();" id="checkRestaurantsLayer" /><img src="images/food.png"  width="20" height="20" alt="" />Restaurantes<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="updateMapLayers();updateFiltros();" id="checkTop20Layer" /><img src="images/prize.png" width="20" height="20" alt="" />Mais Movimentados<br/></td></tr>
+										<!-- <tr><td><input type="checkbox" onchange="addRasterLayer(this,'','topStyle','multi'); updateMapLayers();" id="checkTop20AreaLayer" /><img src="images/area.png"  width="20" height="20" alt="" />Area Mais Movimentados<br/></td></tr> -->
+									</table>
+									<br>
+									<table border="1" align=center  style="HEIGHT:100%;WIDTH:100%;" >
+										<thead><img src="images/filtros.jpg" alt="" /></thead>
+										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" /><img src="images/hungry.png"  width="20" height="20" alt="" />Amigos</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkSemFila" /><img src="images/question.png"  width="20" height="20" alt="" />	 Sem fila</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkJaponesa" /><img src="images/sushi.png"  width="20" height="20" alt="" />  Japonesa<br/></td></tr>
+										
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkRegional" /><img src="images/regional.png"  width="20" height="20" alt="" />  Regional</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkChinesa" /><img src="images/chinesa.png"  width="20" height="20" alt="" />   Chinesa</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkLanche" /><img src="images/fritas.png"  width="20" height="20" alt="" />    Lanche<br/></td></tr>
+										
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkItaliana" /><img src="images/pizza.png"  width="20" height="20" alt="" />  Italiana</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkFastFood" /><img src="images/hamburguer.png"  width="20" height="20" alt="" />  FastFood</td>
+										<td><input type="checkbox" onchange="filtra()" id="checkOutras" /><img src="images/outros.png"  width="20" height="20" alt="" />    Outras<br/></td></tr>
+										
+									</table>
 								</div>
 							</td>
 						</tr>
-						<tr>
-							<td>			
-								<table border="0" align="center">
-									<thead><img src="images/camadas.jpg" width="120" height="25"/></thead>
-									<tr><td><input type="checkbox" onchange="changeLayerAllRestaurant(this);updateFiltros();" id="checkRestaurantsLayer" /><img src="images/food.png"  width="20" height="20" alt="" />Restaurantes<br/></td></tr>
-									<tr><td><input type="checkbox" onchange="updateMapLayers();updateFiltros();" id="checkTop20Layer" /><img src="images/prize.png" width="20" height="20" alt="" />Mais Movimentados<br/></td></tr>
-									<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" /><img src="images/hungry.png" width="20" height="20" alt="" />Amigos<br/></td></tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<br/>
-								<table border="0" align="center">
-									<thead><img src="images/filtros.jpg" alt="" width="100" height="25" /></thead>
-									<tr><td><input type="checkbox" onchange="filtra()" id="checkSemFila" /><img src="images/question.png"  width="20" height="20" alt="" />	 Sem fila</td>
-									<td><input type="checkbox" onchange="filtra()" id="checkJaponesa" /><img src="images/sushi.png"  width="20" height="20" alt="" />  Japonesa<br/></td></tr>
-										
-									<tr><td><input type="checkbox" onchange="filtra()" id="checkRegional" /><img src="images/regional.png"  width="20" height="20" alt="" />  Regional</td>
-									<td><input type="checkbox" onchange="filtra()" id="checkChinesa" /><img src="images/chinesa.png"  width="20" height="20" alt="" />   Chinesa</td>
-									<td><input type="checkbox" onchange="filtra()" id="checkLanche" /><img src="images/fritas.png"  width="20" height="20" alt="" />    Lanche<br/></td></tr>
-										
-									<tr><td><input type="checkbox" onchange="filtra()" id="checkItaliana" /><img src="images/pizza.png"  width="20" height="20" alt="" />  Italiana</td>
-									<td><input type="checkbox" onchange="filtra()" id="checkFastFood" /><img src="images/hamburguer.png"  width="20" height="20" alt="" />  FastFood</td>
-									<td><input type="checkbox" onchange="filtra()" id="checkOutras" /><img src="images/outros.png"  width="20" height="20" alt="" />    Outras<br/></td></tr>
-								</table>
-							</td>
-						</tr>
 					</table>
-					<hr/>
 					<div id="directionsPanel"></div>
 				</div>
 			</td>

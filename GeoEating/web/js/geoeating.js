@@ -76,6 +76,7 @@ function initialize() {
 				title : "Origem"
 			});
 			fonte = event.latLng;
+			setStatus('Clique no restaurante alvo.');
 		} else if (op == 3) {
 			var dist = prompt("Digite a distancia tolerada (em km)", "");
 			if (dist == null) {
@@ -191,6 +192,8 @@ function limpa() {
 			restaurantes[i].m.setIcon(getIconName(restaurantes[i]));
 		}
 	}
+	
+	setStatus('');
 }
 
 function getIconName(restaurante) {
@@ -277,14 +280,26 @@ function possuiComida(restaurante,tipo) {
 	return false;
 }
 
+function setStatus(texto) {
+	if (texto == null || texto == ''){
+		document.getElementById("status").innerHTML='';
+	} else {
+		document.getElementById("status").innerHTML='<p><b><font size="2">&nbsp;&nbsp;'+texto+'</font></b></p>';
+	}
+}
+
 function restaurantesProximos() {
 	limpa();
 	op = 3;
+	
+	setStatus("Clique no ponto para procurar os restaurantes proximos.");
 }
 
 function novoRestaurante() {
 	limpa();
 	op = 1;
+
+	setStatus("Clique onde quer adicionar um novo restaurante.");
 }
 
 function calculaRota() {
@@ -292,6 +307,8 @@ function calculaRota() {
 	fonte = -1;
 	destino = -1;
 	op = 2;
+	
+	setStatus('Clique em um ponto do mapa.');
 }
 
 function verAreaDoTipoDeComida() {
@@ -305,6 +322,8 @@ function adicionaAmigo() {
 	op = 4;
 	document.getElementById("checkAmigos").checked = true;
 	filtraAmigos();
+
+	setStatus("Clique onde quer adicionar seus amigos.");
 }
 
 function getCentroid(points) {
@@ -335,6 +354,13 @@ function getCentroid(points) {
 }
 
 function restaurantesAmigos() {
+	limpa();
+	
+	if (amigos.length == 0) {
+		alert("Marque seus amigos primeiro!");
+		return;
+	}
+	
 	getCentroid(formatarPosicaoDosAmigos());
 }
 
@@ -562,6 +588,7 @@ function addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_com
 			if (fonte != -1) {
 				// consulta 2
 				calcRoute(fonte, destino);
+				setStatus('');
 			}
 		} else {
 		    infowindow.open(map, marker);
@@ -707,7 +734,7 @@ function changeLayerAllRestaurant(input){
 
 function putBufferTop20(){
 	if (document.getElementById("checkTop20Layer").disabled || !document.getElementById("checkTop20Layer").checked) {
-		alert("Selecione a camada do top 20!");
+		alert("Selecione a camada dos mais movimentados!");
 		return;
 	}
 	var valor = prompt("Digite a distancia (em metros) entre os restaurantes a considerar:", "");

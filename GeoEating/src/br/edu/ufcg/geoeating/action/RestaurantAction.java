@@ -36,6 +36,8 @@ public class RestaurantAction extends ActionSupport{
 	
 	private String idRest;
 	
+	private String userLocations;
+	
 	private HttpServletResponse response;
 	
 	public String test(){
@@ -137,6 +139,24 @@ public class RestaurantAction extends ActionSupport{
 		}
 	}
 
+	public void getCentroide() {
+		DataOutputStream dos = null;
+		this.response = ServletActionContext.getResponse();
+
+		try {
+			try {
+				dos = new DataOutputStream(response.getOutputStream());
+				dos.write(getRestaurantDAO().getCentroid(userLocations).getBytes());
+			} catch (Exception e) {
+				dos.write("0".getBytes());
+			} finally {
+				dos.close();
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	public RestaurantDAO getRestaurantDAO() {
 		return restaurantDAO;
 	}
@@ -209,6 +229,14 @@ public class RestaurantAction extends ActionSupport{
 		this.idRest = idRest;
 	}
 
+	public void setUserLocations(String userLocations) {
+		this.userLocations = userLocations;
+	}
+
+	public String getUserLocations() {
+		return userLocations;
+	}
+
 	public HttpServletResponse getResponse() {
 		return response;
 	}
@@ -216,5 +244,4 @@ public class RestaurantAction extends ActionSupport{
 	public void setResponse(HttpServletResponse response) {
 		this.response = response;
 	}
-	
 }

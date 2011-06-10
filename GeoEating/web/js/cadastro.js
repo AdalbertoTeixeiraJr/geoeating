@@ -128,3 +128,27 @@ function atualizarFila(id,valor) {
 	}
 	ajax.send(null);
 }
+
+function getCentroid(points) {
+	var urlWithoutParams = "http://localhost:8080/geoeating/getCentroide.action?";
+	var url = urlWithoutParams + "userLocations=" + points;
+	
+	ajax = ajaxInit();
+	ajax.open("GET", url, true);
+	ajax.onreadystatechange = function() {
+		// readyState==1 Indica que está carregando, nessa hora que
+		// colocamos aquele Loading...
+		if (ajax.readyState == 4) {
+			if (ajax.responseText == "0") {
+				alert('Ocorreu um erro ao processar a requisição!');
+			} else {
+				var texto = ajax.responseText.replace("POINT(", "").replace(")", "");
+				var partes = texto.split(" ");
+				var longitude = parseFloat(partes[0]);
+				var latitude = parseFloat(partes[1]);
+				achaMaisProximoDoCentroide(latitude,longitude);
+			}
+		}
+	}
+	ajax.send(null);
+}

@@ -57,25 +57,25 @@ html,body,#map_canvas {
 									<button name="modal" type="submit" onclick="openDialog('#dialogComidas',400,200)" class="positive">
 										<img src="images/area.png" alt="" /> Ver &aacute;rea de cobertura
 									</button>
+									<button name="submit" class="positive" type="submit" onclick="putBufferTop20()">
+										<img src="images/prize.png" alt="" /> Ver &aacute;rea do TOP20 (mais movimentados)
+									</button>
 									<button type="submit" class="positive" onclick="restaurantesAmigos()">
 										<img src="images/friends.png" alt="" /> Restaurante com os amigos
 									</button>
 									<hr/>
 									<table border="0" align=center>
 										<tr><td><input type="checkbox" onchange="changeLayerAllRestaurant(this);updateFiltros();" id="checkRestaurantsLayer" />Restaurantes<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="updateMapLayers();" id="checkTop20Layer" />Top 20<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="addRasterLayer(this,'','topStyle','multi'); updateMapLayers();" id="checkTop20AreaLayer" />Top 20 Area<br/></td></tr>
-									</table>
-									<table border="1" align=center  style="HEIGHT:100%;WIDTH:100%;" >
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkSemFila" />	 Sem fila<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkRegional" />  Regional<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkJaponesa" />  Japonesa<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkItaliana" />  Italiana<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkChinesa" />   Chinesa<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkFastFood" />  FastFood<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkLanche" />    Lanche<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtra()" id="checkOutras" />    Outras<br/></td></tr>
-										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" /> Amigos<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="updateMapLayers();" id="checkTop20Layer" />Top 20<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkSemFila" />Sem fila<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkRegional" />Regional<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkJaponesa" />Japonesa<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkItaliana" />Italiana<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkChinesa" />Chinesa<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkFastFood" />FastFood<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkLanche" />Lanche<br/></td></tr>
+										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkOutras" />Outras<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" />Amigos<br/></td></tr>
 									</table>
 								</div>
 							</td>

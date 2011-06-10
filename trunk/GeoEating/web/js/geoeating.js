@@ -312,11 +312,14 @@ function getCentroid(points) {
 			if (ajax.responseText == "0") {
 				alert('Ocorreu um erro ao processar a requisição!');
 			} else {
-				var texto = ajax.responseText.replace("POINT(", "").replace(")", "");
-				var partes = texto.split(" ");
-				var longitude = parseFloat(partes[0]);
+				restauranteMaisProximoAmigos=getRestauranteById(ajax.responseText);
+				if(restauranteMaisProximoAmigos){
+					setCentro(restauranteMaisProximoAmigos.m.position);
+				}
+				/* var partes = texto.split(" ");
+				 var longitude = parseFloat(partes[0]);
 				var latitude = parseFloat(partes[1]);
-				achaMaisProximoDoCentroide(latitude,longitude);
+				achaMaisProximoDoCentroide(latitude,longitude);*/
 			}
 		}
 	}

@@ -83,9 +83,27 @@ public class RestaurantDAO {
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public String getCentroid(String multiPointsText) {
-		String geomUsuarios = "'MULTIPOINT(" + multiPointsText + ")'";
-		String query = "SELECT AsText(Centroid(ConvexHull(" + geomUsuarios + "))) AS centro FROM restaurant r LIMIT 1";
-		List<String> results = getEm().createNativeQuery(query).getResultList();
-		return results.get(0);
+		String where = "";
+		String orderBy = "";
+		double buffer = 0.005;
+		String[] geomUsuarios = multiPointsText.split(",");
+		List<Integer> results = null;
+		while(results == null || !(results.size()>0)){
+			where = "";
+			orderBy = "";
+			String opLog = "";
+			String opArit = "";
+			for (String string : geomUsuarios) {
+				where+= opLog+" intersects(geom,buffer(geomfromtext('POINT("+string+")',4326),"+buffer+")) ";
+				orderBy+=opArit+" distance(geom,geomfromtext('POINT("+string+")',4326)) ";
+				opLog = " AND ";
+				opArit = " + ";
+			}
+			String query = "SELECT r.id FROM restaurant r WHERE "+where+" ORDER BY "+orderBy+" LIMIT 1";
+			results = getEm().createNativeQuery(query).getResultList();
+			buffer += 0.005;
+		}
+		
+		return results.get(0).toString();
 	}
 }

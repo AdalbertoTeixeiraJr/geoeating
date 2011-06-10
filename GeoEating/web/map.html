@@ -61,19 +61,22 @@ html,body,#map_canvas {
 										<img src="images/friends.png" alt="" /> Restaurante os com amigos
 									</button>
 									<hr/>
-									
 									<table border="0" align=center>
-										<tr><td><input type="checkbox" onchange="updateFiltros(); addLayer(this,'allrestaurants','geom')" id="checkRestaurantsLayer" />Restaurantes<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkSemFila" />Sem fila<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkRegional" />Regional<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkJaponesa" />Japonesa<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkItaliana" />Italiana<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkChinesa" />Chinesa<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkFastFood" />FastFood<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkLanche" />Lanche<br/></td></tr>
-										<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" onchange="filtra()" id="checkOutras" />Outras<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="changeLayerAllRestaurant(this);updateFiltros();" id="checkRestaurantsLayer" />Restaurantes<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="updateMapLayers();" id="checkTop20Layer" />Top 20<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="addRasterLayer(this,'','topStyle','multi'); updateMapLayers();" id="checkTop20AreaLayer" />Top 20 Area<br/></td></tr>
+									</table>
+									<table border="1" align=center  style="HEIGHT:100%;WIDTH:100%;" >
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkSemFila" />	 Sem fila<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkRegional" />  Regional<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkJaponesa" />  Japonesa<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkItaliana" />  Italiana<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkChinesa" />   Chinesa<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkFastFood" />  FastFood<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkLanche" />    Lanche<br/></td></tr>
+										<tr><td><input type="checkbox" onchange="filtra()" id="checkOutras" />    Outras<br/></td></tr>
 										<tr><td><input type="checkbox" onchange="filtraAmigos();" id="checkAmigos" />Amigos<br/></td></tr>
-									</table>	
+									</table>
 								</div>
 							</td>
 						</tr>
@@ -122,13 +125,13 @@ html,body,#map_canvas {
 				<tr>
 					<td><label>Tipos de Comida: </label></td>
 					<td>
-						<input name="comidaRegional" id="comidaRegional" type="checkbox" value="1">Regional</input> 
-						<input name="comidaJaponesa" id="comidaJaponesa" type="checkbox" value="2">Japonesa</input>
-						<input name="comidaItaliana" id="comidaItaliana" type="checkbox" value="3">Italiana</input><br/>
-						<input name="comidaChin" id="comidaChin" type="checkbox" value="4">Chinesa</input>
-						<input name="comidaFastFood" id="comidaFastFood" type="checkbox" value="5">FastFood</input>
-						<input name="comidaLanche" id="comidaLanche" type="checkbox" value="6">Lanche</input><br/>
-						<input name="comidaOutras" id="comidaOutras" type="checkbox" value="7">Outras</input>
+						<input name="comidaRegional" id="comidaRegional" type="checkbox" value="1">Regional
+						<input name="comidaJaponesa" id="comidaJaponesa" type="checkbox" value="2">Japonesa
+						<input name="comidaItaliana" id="comidaItaliana" type="checkbox" value="3">Italiana<br/>
+						<input name="comidaChin" id="comidaChin" type="checkbox" value="4">Chinesa
+						<input name="comidaFastFood" id="comidaFastFood" type="checkbox" value="5">FastFood
+						<input name="comidaLanche" id="comidaLanche" type="checkbox" value="6">Lanche<br/>
+						<input name="comidaOutras" id="comidaOutras" type="checkbox" value="7">Outras
 					</td>
 				</tr>
 			</table>

@@ -98,7 +98,14 @@ public class RestaurantAction extends ActionSupport{
 							relations.add(rel);
 						}
 					}
-					
+					if(relations.size()==0){
+						FoodKindRelKey id = new FoodKindRelKey();
+						id.setId_foodkind(7);
+						id.setId_restaurant(idRest);
+						FoodKindRelation rel = new FoodKindRelation();
+						rel.setId(id);
+						relations.add(rel);
+					}
 					restaurantDAO.updateRestaurant(r, relations, latitude, longitude);
 					
 					dos.write("1".getBytes());

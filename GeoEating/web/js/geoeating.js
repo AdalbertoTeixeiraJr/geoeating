@@ -18,8 +18,10 @@ var lastClick;
 var customMapType;
 var rasterOptions;
 var layers = [];
+var rasterLayers = [];
 var workspace = "geoeating";
 var tiposComida = ["Regional","Japonesa","Italiana","Chinesa","FastFood","Lanche","Outras"];
+
 
 function initialize() {
 	if (document.getElementById("checkRestaurantsLayer")) {
@@ -29,6 +31,8 @@ function initialize() {
 		document.getElementById("checkAmigos").checked="";
 	}
 	updateFiltros();
+	
+	layers.push({"layer":"allrestaurants", "geomColumn":"geom"});
 	
 	incializado = false;
 	geocoder = new google.maps.Geocoder();
@@ -183,7 +187,7 @@ function limpa() {
 
 function getIconName(restaurante) {
 	if (geocodeResults) {
-		// consulta 6
+		//consulta 6
 		for (i in geocodeResults) {
 			if (geocodeResults[i].geometry.bounds.contains(restaurante.m.getPosition())) {
 				return "images/target.png";
@@ -194,38 +198,42 @@ function getIconName(restaurante) {
 		return "images/target.png";
 	}
 	if (circulo) {
-		// consulta 1
+		//consulta 1
 		if (distancia(restaurante.m.getPosition().lat(), restaurante.m.getPosition().lng(), circulo.getCenter().lat(), circulo.getCenter().lng()) <= (circulo.getRadius()/1000)) {
 			return "images/target.png";
 		}
-	} 
-	if (restaurante.foodTypes.length > 1) {
-		return "images/food.png";
 	}
-	if (restaurante.foodTypes.length == 0) {
-		return "images/question.png";
-	} 
-	if (restaurante.foodTypes[0] == "Regional") {
-		return "images/regional.png";
-	} 
-	if (restaurante.foodTypes[0] == "Japonesa") {
-		return "images/sushi.png";
-	} 
-	if (restaurante.foodTypes[0] == "Chinesa") {
-		return "images/chinesa.png";
-	} 
-	if (restaurante.foodTypes[0] == "Italiana") {
-		return "images/pizza.png";
-	} 
-	if (restaurante.foodTypes[0] == "FastFood") {
-		return "images/hamburguer.png";
-	} 
-	if (restaurante.foodTypes[0] == "Lanche") {
-		return "images/fritas.png";
-	} 
-	if (restaurante.foodTypes[0] == "Outras") {
-		return "images/outros.png";
-	} 
+	if((idsTop.indexOf(restaurante.id)>=0 && document.getElementById("checkTop20Layer").checked )){
+		return "images/prize.png";
+	}else{
+		if (restaurante.foodTypes.length > 1) {
+			return "images/food.png";
+		}
+		if (restaurante.foodTypes.length == 0) {
+			return "images/question.png";
+		} 
+		if (restaurante.foodTypes[0] == "Regional") {
+			return "images/regional.png";
+		} 
+		if (restaurante.foodTypes[0] == "Japonesa") {
+			return "images/sushi.png";
+		} 
+		if (restaurante.foodTypes[0] == "Chinesa") {
+			return "images/chinesa.png";
+		} 
+		if (restaurante.foodTypes[0] == "Italiana") {
+			return "images/pizza.png";
+		} 
+		if (restaurante.foodTypes[0] == "FastFood") {
+			return "images/hamburguer.png";
+		} 
+		if (restaurante.foodTypes[0] == "Lanche") {
+			return "images/fritas.png";
+		} 
+		if (restaurante.foodTypes[0] == "Outras") {
+			return "images/outros.png";
+		} 
+	}
 	return "images/question.png";
 }
 
@@ -291,6 +299,30 @@ function adicionaAmigo() {
 	filtraAmigos();
 }
 
+function getCentroid(points) {
+	var urlWithoutParams = "http://localhost:8080/geoeating/getCentroide.action?";
+	var url = urlWithoutParams + "userLocations=" + points;
+	
+	ajax = ajaxInit();
+	ajax.open("GET", url, true);
+	ajax.onreadystatechange = function() {
+		// readyState==1 Indica que está carregando, nessa hora que
+		// colocamos aquele Loading...
+		if (ajax.readyState == 4) {
+			if (ajax.responseText == "0") {
+				alert('Ocorreu um erro ao processar a requisição!');
+			} else {
+				var texto = ajax.responseText.replace("POINT(", "").replace(")", "");
+				var partes = texto.split(" ");
+				var longitude = parseFloat(partes[0]);
+				var latitude = parseFloat(partes[1]);
+				achaMaisProximoDoCentroide(latitude,longitude);
+			}
+		}
+	}
+	ajax.send(null);
+}
+
 function restaurantesAmigos() {
 	getCentroid(formatarPosicaoDosAmigos());
 }
@@ -317,9 +349,12 @@ function apagaTemp() {
 	tempDest.setMap(null);
 }
 
-// que tavam no html
+//que tavam no html
 function updateMapLayers(){
 	limpaPlacemarks();
+	if(document.getElementById("checkTop20Layer").checked){
+		pegaLayer(workspace,'top20arearestaurant','geom',callbackTopArea);
+	}
 	if(layers && layers.length>0){
 		for(i in layers){
 			pegaLayer(workspace,layers[i].layer,layers[i].geomColumn,callbackWFS);
@@ -329,11 +364,17 @@ function updateMapLayers(){
 
 function limpaPlacemarks(){
 	if (restaurantes) {
+		var tops = [];
 		for(j in restaurantes){
-			restaurantes[j].m.setMap(null);
+			if((idsTop.indexOf(restaurantes[j].id)<0 || !document.getElementById("checkTop20Layer").checked )){
+				restaurantes[j].m.setMap(null);
+			}else{
+				//alert((idsTop.indexOf(restaurantes[j].id)>=0 +" | "+ document.getElementById("checkTop20Layer").checked ));
+				tops.push(restaurantes[j]);
+			}
 		}
+		restaurantes = tops;
 	}
-	restaurantes = [];
 }
 
 function addFoodType(restaurante,foodType) {
@@ -477,12 +518,23 @@ function parseRestaurant(node,workspace,geomColumn){
 	}
 
 	var location = new google.maps.LatLng(lat,lon);
-	var restaurante = getRestauranteByLocation(location);
+	var restaurante = getRestauranteById(id);
 	if (restaurante != null) { // restaurante ja foi criado, apenas adiciona o tipo de comida
 		addFoodType(restaurante,tipo_comida);
 		return;
 	}
+	if(!(idsTop.indexOf(id)>=0 && document.getElementById("checkTop20Layer").checked )){
+		if(showAll){
+			addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location)
+		}
+	}else if((idsTop.indexOf(id)>=0 && document.getElementById("checkTop20Layer").checked )){
+		if(!restaurante){
+			addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location)
+		}
+	}
+}
 
+function addRestMarker(map,nome,filaDeEspera,descricao,telefone,end_web,tipo_comida,id,lat,lon,location){
 	var marker = new google.maps.Marker({
 		position : location,
 		map : map,
@@ -512,8 +564,8 @@ function parseRestaurant(node,workspace,geomColumn){
 		}
 	});
 	
-	restaurante = {
-			id : id,
+	var restaurante = {
+			id: id,
 			name : nome,
 			description : descricao,
 			wait : parseInt(filaDeEspera),
@@ -539,7 +591,46 @@ function getRestauranteByLocation(location) {
 	return null;
 }
 
+function getRestauranteById(id) {
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var r = restaurantes[i];
+		    if (r.id == id) {
+		    	return r;
+		    }
+		}
+	}
+	return null;
+}
+
+var idsTop = [];
+
+function callbackTopArea(responseXML, status,workspace,layer,geomColumn){
+	var wfsCollection = responseXML.firstChild;
+	if(wfsCollection.nodeName == "wfs:FeatureCollection"){
+		var wfsChilds = wfsCollection.childNodes;
+		for(var i=0; i < wfsChilds.length; i++){
+			var node = wfsChilds.item(i);
+			if(node.nodeName == "gml:featureMember"){
+				var camada = node.firstChild;
+				var geom = null;
+				var id = null;
+				if (camada.nodeName == workspace+":"+layer) {
+					for (var j=0; j < camada.childNodes.length; j++){
+						var child = camada.childNodes.item(j);
+						if(child.nodeName == workspace+":id") {
+							id = child.textContent;
+							idsTop.push(id);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 function pegaLayer(workspace,camada,geomColumn,callback){
+	inicializado = true;
 	var bbox = getBbox();
 	var layer = workspace+":"+camada;
 	var url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+layer+"&styles=&bbox="+bbox;
@@ -567,15 +658,59 @@ function getBbox(){
 	
 }
 
-function addLayer(input,layer,geomColumn){
-	inicializado = true;
-	var checked = input.checked;
-	for(i in layers){
-		if(layers[i].layer == layer){
-			layers.splice(i,1);
+function addRasterLayer(input,work,layerName,geomColumn){
+	for(i in rasterLayers){
+		if(rasterLayers[i].layer == layerName){
+			rasterLayers.splice(i,1);
 		}
+		map.overlayMapTypes.removeAt(0);
 	}
-	addLayerOnMap(checked,layer,geomColumn);
+	if(input.checked){
+		rasterLayers.push({"layer":layerName, "geomColumn":geomColumn});
+	}
+	for(i in rasterLayers){
+		if(work.length>0){ work = work+":";}
+		var rasterOptions = {
+		   	     getTileUrl: function(coord, zoom) {
+		   	       return "http://localhost:8080/geoserver/gwc/service/gmaps?layers="+work+layerName +
+		   	        "&zoom=" + zoom + "&x=" + coord.x + "&y=" + coord.y + "&format=image/png";
+		   	     },
+		   	     tileSize: new google.maps.Size(256, 256),
+		   	     isPng: true,
+		   	     opacity: 0.6,
+		   	  	 minZoom: 13,
+		   	     name: "",
+		   	     alt: ""
+		   	 };
+		var customMapType = new google.maps.ImageMapType(rasterOptions);
+		map.overlayMapTypes.insertAt(0, customMapType);	
+	}
+}
+
+var showAll = false;
+
+function changeLayerAllRestaurant(input){
+	showAll = input.checked;
+	addLayer(input,'','');
+}
+
+function putBufferTop20(){
+	alert('bota buffer');
+}
+
+function addLayer(input,layer,geomColumn){
+	var checked = input.checked;
+	if(layer.length>0){
+		for(i in layers){
+			if(layers[i].layer == layer){
+				layers.splice(i,1);
+			}
+		}
+		addLayerOnMap(checked,layer,geomColumn);
+	}else{
+		addLayerOnMap(false,layer,geomColumn);
+	}
+	
 }
 
 function addLayerOnMap(checked,layer,geomColumn) {

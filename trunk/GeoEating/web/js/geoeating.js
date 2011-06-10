@@ -17,11 +17,13 @@ var customMapType;
 var rasterOptions;
 var layers = [];
 var workspace = "geoeating";
+var tiposComida = ["Regional","Japonesa","Italiana","Chinesa","FastFood","Lanche","Outras"];
 
 function initialize() {
 	if (document.getElementById("checkRestaurantsLayer")) {
 		document.getElementById("checkRestaurantsLayer").checked="";
 	}
+	updateFiltros();
 	
 	incializado = false;
 	geocoder = new google.maps.Geocoder();
@@ -90,6 +92,55 @@ function initialize() {
 	});
 }
 
+function updateFiltros() {
+	var restauranteChecked = false;
+	if (document.getElementById("checkRestaurantsLayer")) {
+		restauranteChecked = document.getElementById("checkRestaurantsLayer").checked;
+	}
+	var checkSemFila = document.getElementById("checkSemFila");
+	if (checkSemFila) {
+		checkSemFila.disabled=!restauranteChecked;
+	}
+	for (j in tiposComida) {
+		var checkBox = document.getElementById("check" + tiposComida[j]);
+		if (checkBox) {
+			checkBox.disabled=!restauranteChecked;
+			checkBox.checked=restauranteChecked;
+		}
+	}
+}
+
+function filtra() {
+	var checkSemFila = document.getElementById("checkSemFila");
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var r = restaurantes[i];
+			var show = true;
+			if (checkSemFila && checkSemFila.checked && r.wait != 0) {
+				show = false;
+			} else {
+				var possuiAlgumaComidaSelecionada = false;
+				for (j in tiposComida) {
+					var checkBox = document.getElementById("check" + tiposComida[j]);
+					if (checkBox && checkBox.checked) {
+						if (possuiComida(r,tiposComida[j])) {
+							possuiAlgumaComidaSelecionada = true;
+							break;
+						}
+					}
+				}
+				show = possuiAlgumaComidaSelecionada;
+			}
+		
+			if (show) {
+				r.m.setMap(map);
+			} else {
+				r.m.setMap(null);
+			}
+		}
+	}
+}
+
 function limpa() {
 	directionsDisplay.setMap(null);
 	directionsDisplay.setPanel(null);
@@ -123,7 +174,7 @@ function getIconName(restaurante) {
 	if (geocodeResults) {
 		// consulta 6
 		for (i in geocodeResults) {
-			if (geocodeResults[i].geometry.bounds.contains(restaurante.m.getPosition()) && restaurante.wait == 0) {
+			if (geocodeResults[i].geometry.bounds.contains(restaurante.m.getPosition())) {
 				return "images/target.png";
 			}
 		}
@@ -183,6 +234,17 @@ function procurarPorEnd() {
 			alert("Erro: " + status);
 		}
 	});
+}
+
+function possuiComida(restaurante,tipo) {
+	if (restaurante) {
+		for (i in restaurante.foodTypes) {
+			if (restaurante.foodTypes[i]==tipo) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 function restaurantesProximos() {
@@ -273,6 +335,7 @@ function callbackWFS(responseXML, status,workspace,layer,geomColumn){
 		}
 	}
 	setStylesForMarkers();
+	filtra();
 }
 
 function callbackConvexHull(responseXML,status,workspace,layer,geomColumn){
@@ -358,6 +421,7 @@ function parseRestaurant(node,workspace,geomColumn){
 	var telefone = "";
 	var end_web = "";
 	var tipo_comida = "";
+	var id = "";
 	
 	for(var i=0;i<childNodes.length;i++){
 		var child = childNodes.item(i);
@@ -382,6 +446,8 @@ function parseRestaurant(node,workspace,geomColumn){
 			end_web = child.textContent;
 		} else if (child.nodeName == workspace+":fkname") {
 			tipo_comida = child.textContent;
+		} else if (child.nodeName == workspace+":id") {
+			id = child.textContent;
 		}
 	}
 
@@ -417,7 +483,7 @@ function parseRestaurant(node,workspace,geomColumn){
 	google.maps.event.addListener(marker, 'dblclick', function(event) {
 		var novaFila = prompt("Digite a fila de espera do restaurante:", "");
 		if (novaFila != null) {
-			atualizarFila(lat, lon, novaFila);
+			atualizarFila(id, novaFila);
 		}
 	});
 	

@@ -75,8 +75,8 @@ public class RestaurantDAO {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public boolean updateWaitRestaurantByLatLng(String latitude, String longitude, Integer valor) {
-		Query query = getEm().createNativeQuery("UPDATE Restaurant r SET qtt_waiting = " + valor + " WHERE AsText(r.geom)='POINT(" + longitude + " " + latitude + ")'");
+	public boolean updateWaitRestaurant(String restaurantId, Integer valor) {
+		Query query = getEm().createNativeQuery("UPDATE Restaurant r SET qtt_waiting = " + valor + " WHERE r.id = " + restaurantId);
 		return query.executeUpdate() == 1;
 	}
 }

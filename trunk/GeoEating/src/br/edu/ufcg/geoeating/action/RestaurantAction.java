@@ -34,9 +34,7 @@ public class RestaurantAction extends ActionSupport{
 	
 	private String novaFila;
 	
-	private String latitudeRest;
-	
-	private String longitudeRest;
+	private String idRest;
 	
 	private HttpServletResponse response;
 	
@@ -124,7 +122,7 @@ public class RestaurantAction extends ActionSupport{
 				dos = new DataOutputStream(response.getOutputStream());
 				int qttWaiting = Integer.parseInt(novaFila);
 				
-				if (getRestaurantDAO().updateWaitRestaurantByLatLng(latitudeRest, longitudeRest, qttWaiting)) {
+				if (getRestaurantDAO().updateWaitRestaurant(idRest, qttWaiting)) {
 					dos.write("1".getBytes());
 				} else {
 					dos.write("0".getBytes());
@@ -203,20 +201,12 @@ public class RestaurantAction extends ActionSupport{
 		this.novaFila = novaFila;
 	}
 
-	public String getLatitudeRest() {
-		return latitudeRest;
+	public String getIdRest() {
+		return idRest;
 	}
 
-	public void setLatitudeRest(String latitudeRest) {
-		this.latitudeRest = latitudeRest;
-	}
-
-	public String getLongitudeRest() {
-		return longitudeRest;
-	}
-
-	public void setLongitudeRest(String longitudeRest) {
-		this.longitudeRest = longitudeRest;
+	public void setIdRest(String idRest) {
+		this.idRest = idRest;
 	}
 
 	public HttpServletResponse getResponse() {

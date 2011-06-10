@@ -117,6 +117,7 @@ function initialize() {
 				title : "Origem"
 			});
 			fonte = event.latLng;
+			setStatus("Marque o restaurante");
 		} else if (op == 3) {
 			var dist = prompt("Digite a distancia tolerada (em km)", "");
 			if (dist == null) {
@@ -195,7 +196,16 @@ function filtra() {
 				r.m.setMap(null);
 			}
 		}
+		
 		putBufferTop20WithRadius(lastTop20Buffer);
+	}
+}
+
+function setStatus(status) {
+	if (status == null || status == '') {
+		document.getElementById("status").innerHTML = '';
+	} else {
+		document.getElementById("status").innerHTML = '<p><b><font size="2">&nbsp;&nbsp;&nbsp;' + status + '</font></b></p>';
 	}
 }
 
@@ -205,6 +215,8 @@ function limpaFerramentas(){
 }
 
 function limpa() {
+	setStatus('');
+	
 	directionsDisplay.setMap(null);
 	directionsDisplay.setPanel(null);
 	
@@ -335,6 +347,8 @@ function possuiComida(restaurante,tipo) {
 function restaurantesProximos() {
 	limpa();
 	op = 3;
+	
+	setStatus("Marque o local para procurar");
 }
 
 function areaTop20() {
@@ -345,6 +359,8 @@ function areaTop20() {
 function novoRestaurante() {
 	limpa();
 	op = 1;
+	
+	setStatus("Marque o local do restaurante");
 }
 
 function calculaRota() {
@@ -352,6 +368,8 @@ function calculaRota() {
 	fonte = -1;
 	destino = -1;
 	op = 2;
+	
+	setStatus("Marque a origem");
 }
 
 function verAreaDoTipoDeComida() {
@@ -365,6 +383,8 @@ function adicionaAmigo() {
 	op = 4;
 	document.getElementById("checkAmigos").checked = true;
 	filtraAmigos();
+
+	setStatus("Marque a posição do amigo");
 }
 
 function getCentroid(points) {
@@ -393,6 +413,13 @@ function getCentroid(points) {
 }
 
 function restaurantesAmigos() {
+	if (amigos.length == 0){
+		alert("Marque os amigos!");
+		return;
+	}
+	
+	limpa();
+	
 	getCentroid(formatarPosicaoDosAmigos());
 }
 
@@ -412,6 +439,7 @@ function calcRoute(fonte, destino) {
 	});
 	op = 0;
 	apagaTemp();
+	setStatus('');
 }
 
 function apagaTemp() {
@@ -845,10 +873,9 @@ function putBufferTop20WithRadius(raio){
 	if (document.getElementById("checkTop20Layer").disabled || !document.getElementById("checkTop20Layer").checked) {
 		//alert("Selecione a camada do top 20!");
 		return;
-	}else if(op == 20){
+	} else if(op == 20) {
 		var valor = raio;
 		if (valor == null || !isFinite(valor)) {
-			alert("Valor invalido!");
 			return;
 		}
 		

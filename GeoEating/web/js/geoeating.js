@@ -3,6 +3,7 @@ var directionDisplay;
 var directionsService;
 var amigos = [];
 var restaurantes = [];
+var buffers = [];
 var tempDest;
 var circulo;
 var op;
@@ -112,6 +113,10 @@ function updateFiltros() {
 	if (checkSemFila) {
 		checkSemFila.disabled=!restauranteChecked;
 	}
+	var checkTop20 = document.getElementById("checkTop20Layer");
+	if (checkTop20) {
+		checkTop20.disabled=!restauranteChecked;
+	}
 	for (j in tiposComida) {
 		var checkBox = document.getElementById("check" + tiposComida[j]);
 		if (checkBox) {
@@ -172,6 +177,13 @@ function limpa() {
 	if (convexHull) {
 		convexHull.setMap(null);
 		convexHull = null;
+	}
+	
+	if (buffers) {
+		for (i in buffers) {
+			buffers[i].setMap(null);
+		}
+		buffers = [];
 	}
 	
 	if (geocodeResults) {
@@ -698,7 +710,38 @@ function changeLayerAllRestaurant(input){
 }
 
 function putBufferTop20(){
-	alert('bota buffer');
+	if (document.getElementById("checkTop20Layer").disabled || !document.getElementById("checkTop20Layer").checked) {
+		alert("Selecione a camada do top 20!");
+		return;
+	}
+	var valor = prompt("Digite a distancia (em metros) entre os restaurantes a considerar:", "");
+	if (valor == null || !isFinite(valor)) {
+		alert("Valor invalido!");
+		return;
+	}
+	
+	limpa();
+
+	if (restaurantes) {
+		for (i in restaurantes) {
+			var restaurante = restaurantes[i];
+			if (idsTop.indexOf(restaurante.id)>=0) {
+				var buffer = new google.maps.Circle({
+					center : restaurante.m.position,
+					radius : parseFloat(valor),
+					clickable : false,
+					strokeColor : "#FF0000",
+					strokeOpacity : 0.2,
+					strokeWeight : 0.5,
+					fillColor : "#FF0000",
+					fillOpacity : 0.2
+				});
+				
+				buffer.setMap(map);
+				buffers.push(buffer);
+			}
+		}
+	}
 }
 
 function addLayer(input,layer,geomColumn){

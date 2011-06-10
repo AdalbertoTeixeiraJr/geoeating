@@ -1,3 +1,7 @@
+DROP VIEW AllRestaurants;
+
+DROP VIEW FoodKindConvexHull;
+
 DROP VIEW Top20Area;
 
 DROP VIEW MovimentedRestaurant;

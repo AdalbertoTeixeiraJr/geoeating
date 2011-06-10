@@ -72,7 +72,7 @@ CREATE OR REPLACE VIEW AllRestaurants AS
 SELECT r.id, r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fk.name AS fkname
 FROM restaurant r, foodkind fk, restaurantfoodkind rfk
 WHERE r.id = rfk.id_restaurant AND fk.id = rfk.id_foodkind
-GROUP BY r.id, r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fkname
+GROUP BY r.id, r.name, r.qtt_waiting, r.description, r.tel, r.end_web, r.geom, fkname;
 
 CREATE OR REPLACE VIEW FoodKindConvexHull AS 
 SELECT fk.name, convexhull(multi(st_union(geom))) 

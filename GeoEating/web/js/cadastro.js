@@ -107,10 +107,9 @@ function cadastra() {
 	}
 }
 
-function atualizarFila(latitude,longitude,valor) {
+function atualizarFila(id,valor) {
 	var urlWithoutParams = "http://localhost:8080/geoeating/atualizarFila.action?";
-	var url = urlWithoutParams + "latitudeRest=" + latitude;
-	var url = urlWithoutParams + "longitudeRest=" + longitude;
+	var url = urlWithoutParams + "idRest=" + id;
 	url = url + "&novaFila=" + valor;
 
 	ajax = ajaxInit();
@@ -121,6 +120,7 @@ function atualizarFila(latitude,longitude,valor) {
 		if (ajax.readyState == 4) {
 			if (ajax.responseText == "1") {
 				alert('Fila atualizada!');
+				updateMapLayers();
 			} else {
 				alert('Fila nao pode ser atualizada! Verifique o valor que voce definiu.');
 			}
